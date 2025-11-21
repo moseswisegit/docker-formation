@@ -118,23 +118,54 @@
             position: absolute;
             top: 30px;
             right: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 18px 30px;
-            border-radius: 35px;
-            transform: rotate(-5deg);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 0 2px 8px rgba(0, 0, 0, 0.15);
-            font-weight: bold;
-            font-size: 1.3em;
+            background: linear-gradient(135deg, #0db7ed 0%, #667eea 50%, #764ba2 100%);
+            padding: 20px 35px;
+            border-radius: 50px;
+            transform: rotate(-3deg);
+            box-shadow: 0 8px 30px rgba(13, 183, 237, 0.4), 
+                        0 4px 15px rgba(102, 126, 234, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            font-weight: 700;
+            font-size: 1.1em;
             color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
         }
 
         .moseswise-badge:hover {
-            transform: rotate(-3deg) scale(1.05);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: rotate(0deg) scale(1.08);
+            box-shadow: 0 12px 40px rgba(13, 183, 237, 0.5), 
+                        0 6px 20px rgba(102, 126, 234, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            background: linear-gradient(135deg, #0ba5d1 0%, #5a6fd8 50%, #6a3fa0 100%);
+        }
+
+        .moseswise-badge .badge-text {
+            font-size: 1.2em;
+            letter-spacing: 0.5px;
+        }
+
+        .moseswise-badge .badge-email {
+            font-size: 0.85em;
+            opacity: 0.95;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .moseswise-badge .badge-email:hover {
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
 
         .date-badge {
@@ -226,7 +257,18 @@
                 top: 0;
                 right: 0;
                 margin-bottom: 20px;
-                display: inline-block;
+                display: inline-flex;
+                transform: rotate(0deg);
+                padding: 15px 25px;
+                font-size: 0.9em;
+            }
+
+            .moseswise-badge .badge-text {
+                font-size: 1em;
+            }
+
+            .moseswise-badge .badge-email {
+                font-size: 0.75em;
             }
 
             .chapters-preview {
@@ -241,7 +283,10 @@
     <!-- Page d'accueil plein écran -->
     <div id="homepage" class="homepage">
         <div class="date-badge" id="current-date"></div>
-        <div class="moseswise-badge">✨ fais pas MosesWise ✨</div>
+        <div class="moseswise-badge">
+            <div class="badge-text">✨ fais pas MosesWise ✨</div>
+            <a href="mailto:moseswisegit@gmail.com" class="badge-email">moseswisegit@gmail.com</a>
+        </div>
         <div class="homepage-content">
             <div class="homepage-icon">🐳</div>
             <h1>Docker : Comprendre la Conteneurisation</h1>
