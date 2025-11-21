@@ -1,0 +1,3886 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker : Présentation Complète pour Débutants</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500;800&display=swap"
+        rel="stylesheet">
+    <script>
+        // Empêcher le scroll du body quand la page d'accueil est visible et afficher la date
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.style.overflow = 'hidden';
+
+            // Afficher la date d'aujourd'hui
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                const today = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                const dateString = today.toLocaleDateString('fr-FR', options);
+                dateElement.textContent = dateString;
+            }
+        });
+    </script>
+    <style>
+        .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .chapter-title {
+            color: #0db7ed;
+            border-bottom: 3px solid #0db7ed;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 800;
+            background: linear-gradient(90deg, rgba(13, 183, 237, 0.1) 0%, transparent 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+        }
+
+        /* Page d'accueil plein écran */
+        .homepage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            overflow-y: auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .homepage.hidden {
+            display: none;
+        }
+
+        .homepage-content {
+            margin-top: 200px;
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            padding-top: 20px;
+        }
+
+        .homepage-icon {
+            font-size: 6em;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+            display: block;
+            line-height: 1;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .homepage h1 {
+            font-size: 3.5em;
+            margin: 0 0 15px 0;
+            color: #0db7ed;
+            font-weight: 800;
+        }
+
+        .homepage .subtitle {
+            font-size: 1.5em;
+            margin-bottom: 50px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .moseswise-badge {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px 30px;
+            border-radius: 35px;
+            transform: rotate(-5deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4), 0 2px 8px rgba(0, 0, 0, 0.15);
+            font-weight: bold;
+            font-size: 1.3em;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .moseswise-badge:hover {
+            transform: rotate(-3deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .date-badge {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, #0db7ed 0%, #667eea 100%);
+            padding: 12px 25px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(13, 183, 237, 0.3);
+            font-weight: 600;
+            font-size: 1em;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .chapters-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 50px 0;
+            text-align: left;
+        }
+
+        .chapter-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(13, 183, 237, 0.15);
+            border-color: #0db7ed;
+        }
+
+        .chapter-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            color: #0db7ed;
+            font-weight: 700;
+        }
+
+        .chapter-card p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .start-button {
+            margin-top: 40px;
+            padding: 18px 50px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #0db7ed 0%, #667eea 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(13, 183, 237, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(13, 183, 237, 0.4);
+            background: linear-gradient(135deg, #0ba5d1 0%, #5a6fd8 100%);
+        }
+
+        @media (max-width: 768px) {
+            .homepage h1 {
+                font-size: 2.5em;
+            }
+
+            .homepage .subtitle {
+                font-size: 1.2em;
+            }
+
+            .moseswise-badge {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+
+            .chapters-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Page d'accueil plein écran -->
+    <div id="homepage" class="homepage">
+        <div class="date-badge" id="current-date"></div>
+        <div class="moseswise-badge">✨ fais pas MosesWise ✨</div>
+        <div class="homepage-content">
+            <div class="homepage-icon">🐳</div>
+            <h1>Docker : Comprendre la Conteneurisation</h1>
+            <p class="subtitle">Présentation Complète pour Débutants</p>
+
+            <div class="chapters-preview">
+                <div class="chapter-card">
+                    <h3>1. Introduction à Docker</h3>
+                    <p>Découvrez les problèmes que Docker résout et pourquoi la conteneurisation est essentielle pour le
+                        développement moderne.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>2. Architecture de Docker</h3>
+                    <p>Comprenez comment Docker fonctionne en profondeur : daemon, client, images et conteneurs.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>3. Les Images Docker</h3>
+                    <p>Apprenez à créer, gérer et optimiser vos images Docker avec Dockerfile.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>4. Les Conteneurs Docker</h3>
+                    <p>Maîtrisez la création, l'exécution et la gestion des conteneurs Docker.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>5. Docker Networking</h3>
+                    <p>Explorez les réseaux Docker et la communication entre conteneurs.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>6. Volumes et Stockage</h3>
+                    <p>Gérez la persistance des données avec les volumes Docker.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>7. Docker Compose</h3>
+                    <p>Orchestrez plusieurs conteneurs avec Docker Compose pour des applications complexes.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>8. Docker Registry</h3>
+                    <p>Découvrez comment partager et distribuer vos images Docker.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>9. Sécurité Docker</h3>
+                    <p>Apprenez les bonnes pratiques de sécurité pour vos conteneurs.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>10. Optimisation & Bonnes Pratiques</h3>
+                    <p>Optimisez vos images et conteneurs pour de meilleures performances.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>11. Docker en Production</h3>
+                    <p>Déployez vos applications Docker en production de manière sécurisée.</p>
+                </div>
+                <div class="chapter-card">
+                    <h3>12. Démo Pratique</h3>
+                    <p>Mettez en pratique tout ce que vous avez appris avec un projet réel.</p>
+                </div>
+            </div>
+
+            <button class="start-button"
+                onclick="document.getElementById('homepage').classList.add('hidden'); document.body.style.overflow = 'auto';">
+                🚀 Commencer la Formation
+            </button>
+        </div>
+    </div>
+
+    <nav class="sidebar">
+        <h2>TABLE DES MATIÈRES</h2>
+        <ul>
+            <li><a href="#"
+                    onclick="document.getElementById('homepage').classList.remove('hidden'); document.body.style.overflow = 'hidden'; return false;"
+                    style="font-weight: bold; color: #0db7ed;">🏠 Accueil</a></li>
+            <li><a href="#intro-docker">1. Introduction à Docker</a></li>
+            <li><a href="#collaboration-developpeurs">1.5. Collaboration entre Développeurs</a></li>
+            <li><a href="#archi-docker">2. Architecture de Docker</a></li>
+            <li><a href="#images-docker">3. Les Images Docker</a></li>
+            <li><a href="#conteneurs-docker">4. Les Conteneurs Docker</a></li>
+            <li><a href="#networking-docker">5. Docker Networking</a></li>
+            <li><a href="#volumes-stockage">6. Volumes et Stockage</a></li>
+            <li><a href="#compose-docker">7. Docker Compose</a></li>
+            <li><a href="#registry-docker">8. Docker Registry</a></li>
+            <li><a href="#securite-docker">9. Sécurité Docker</a></li>
+            <li><a href="#optimisation-docker">10. Optimisation & Bonnes Pratiques</a></li>
+            <li><a href="#production-docker">11. Docker en Production</a></li>
+            <li><a href="#demo-pratique">12. Démo Pratique</a></li>
+            <li><a href="#resume-qa">Résumé & Q&A</a></li>
+            <li><a href="#conclusion">Conclusion & Remerciements</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+
+        <header class="hero-section">
+            <span class="icon">🐳</span>
+            <h1>Docker : Comprendre la Conteneurisation</h1>
+            <p class="subtitle">Présentation Complète pour Débutants</p>
+        </header>
+
+        <section id="intro-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 1 : Introduction à Docker</h2>
+
+            <article class="sub-section">
+                <h3>1.1 - Les Problèmes que Nous Rencontrons (Avant Docker)</h3>
+
+                <h4>🚨 Problème #1 : "Ça marche sur mon ordinateur, mais pas sur le tien !"</h4>
+                <div class="problem-box">
+                    <p><strong>Cas pratique en entreprise :</strong></p>
+                    <p><strong>Scénario :</strong> Une équipe de 5 développeurs travaille sur un projet e-commerce pour
+                        une entreprise. Le projet utilise Laravel (PHP) et MySQL pour la base de données.
+                        cache.</p>
+                    <p><strong>La situation :</strong></p>
+                    <ul>
+                        <li>✅ <strong>Développeur A</strong> (sur Windows) : Le projet fonctionne parfaitement sur sa
+                            machine</li>
+                        <li>✅ <strong>Développeur A</strong> : Pousse le code sur Git pour que l'équipe puisse
+                            travailler</li>
+                        <li>❌ <strong>Développeur B</strong> (sur Mac) : Clone le projet mais il ne démarre pas !</li>
+                        <li>❌ <strong>Développeur C</strong> (sur Linux) : Même problème, erreurs de connexion à la base
+                            de données</li>
+                        <li>❌ <strong>Développeur D</strong> : PHP version différente, extensions manquantes</li>
+                    </ul>
+                    <p><strong>Pourquoi ça arrive ?</strong></p>
+                    <p>Chaque développeur a installé des versions différentes de PHP et MySQL sur sa machine. Le
+                        Développeur A utilise PHP 8.2, mais le Développeur B a PHP 8.0. Le Développeur C a MySQL 8.0,
+                        mais le Développeur D a MySQL 5.7. Les configurations sont toutes différentes !</p>
+                    <p>C'est comme si chaque développeur avait une cuisine différente : l'un a un four électrique,
+                        l'autre un four à gaz, et un troisième n'a pas de four du tout. Même avec la même recette, le
+                        résultat ne sera jamais identique !</p>
+                    <p><strong>Résultat en entreprise :</strong></p>
+                    <ul>
+                        <li>⏱️ <strong>Temps perdu :</strong> 2-3 heures par développeur pour configurer son
+                            environnement</li>
+                        <li>😰 <strong>Frustration :</strong> "Ça marche chez moi !" - le problème classique</li>
+                        <li>💰 <strong>Coût :</strong> Perte de productivité, retards sur les deadlines</li>
+                        <li>❌ <strong>Risque :</strong> Bugs qui n'apparaissent que sur certaines machines</li>
+                    </ul>
+                </div>
+
+                <h4>🚨 Problème #2 : Il Faut Tout Installer et Configurer à la Main</h4>
+                <div class="problem-box">
+                    <p><strong>Dans notre cas pratique d'entreprise :</strong></p>
+                    <p>Quand un nouveau développeur rejoint l'équipe, il doit configurer son environnement de
+                        développement. Voici ce qu'il doit faire :</p>
+                </div>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ AVANT DOCKER : Configuration Manuelle en Entreprise    │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 👨‍💻 Personne 1 (sur Windows)                            │
+│ ├─ Doit installer PHP (comme installer un logiciel)     │
+│ ├─ Doit installer MySQL (la base de données)            │
+│ ├─ Doit tout régler manuellement                         │
+│ ├─ Doit installer plein d'autres choses                  │
+│ └─ ⏱️ Ça prend 2-3 heures !                             │
+│                                                           │
+│ 👩‍💻 Personne 2 (sur Mac)                                │
+│ ├─ Doit installer PHP aussi (mais version différente !) │
+│ ├─ Doit installer MySQL aussi                           │
+│ ├─ Doit tout reconfigurer...                             │
+│ └─ ⚠️ Risque de faire des erreurs                       │
+│                                                           │
+│ 🖥️ Le Serveur (sur Linux)                               │
+│ ├─ Doit installer PHP (encore une autre version !)      │
+│ ├─ Doit installer MySQL                                 │
+│ ├─ Doit tout configurer manuellement                     │
+│ └─ ❌ Ça ne marche pas à cause des différences          │
+│                                                           │
+│ ⏱️ Temps perdu : 2-3 heures par personne                │
+│ 😰 Frustration : Beaucoup !                              │
+│ ❌ Erreurs : Très fréquentes                             │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <p><strong>Impact sur l'entreprise :</strong></p>
+                <p>Chaque nouveau développeur qui rejoint l'équipe doit passer sa première journée (ou plus) à
+                    configurer son environnement au lieu de commencer à coder. C'est comme si chaque nouvel employé
+                    devait d'abord :</p>
+                <ul>
+                    <li>⏱️ Installer tous les outils nécessaires (PHP, MySQL, etc.)</li>
+                    <li>⏱️ Configurer chaque outil manuellement</li>
+                    <li>⏱️ Résoudre les problèmes de compatibilité</li>
+                    <li>⏱️ Tester que tout fonctionne</li>
+                    <li>⏱️ Espérer qu'il n'y a pas d'erreurs</li>
+                </ul>
+                <p><strong>Résultat :</strong> Le nouveau développeur ne peut pas être productif immédiatement.
+                    L'entreprise perd du temps et de l'argent en formation et configuration au lieu de développement !
+                </p>
+
+                <h4>🚨 Problème #3 : Les Versions de Logiciels se Marchent Dessus</h4>
+                <div class="problem-box">
+                    <p><strong>Cas pratique en entreprise :</strong></p>
+                    <p><strong>Scénario :</strong> Un développeur travaille sur plusieurs projets pour l'entreprise en
+                        même temps :</p>
+                    <ul>
+                        <li>📦 <strong>Projet E-commerce</strong> : Nécessite PHP 8.2 et MySQL 8.0</li>
+                        <li>📦 <strong>Projet API Legacy</strong> : Nécessite PHP 7.4 et MySQL 5.7 (ancien projet)</li>
+                        <li>📦 <strong>Projet Dashboard</strong> : Nécessite Node.js 18</li>
+                        <li>📦 <strong>Projet Microservice</strong> : Nécessite Node.js 20</li>
+                    </ul>
+                    <p><strong>Le problème :</strong></p>
+                    <ul>
+                        <li>❌ Tu ne peux pas avoir PHP 8.2 ET PHP 7.4 en même temps sur la même machine</li>
+                        <li>❌ Tu ne peux pas avoir MySQL 8.0 ET MySQL 5.7 en même temps</li>
+                        <li>❌ Tu ne peux pas avoir Node.js 18 ET Node.js 20 en même temps facilement</li>
+                        <li>❌ Si tu changes de version pour un projet, les autres projets se cassent !</li>
+                    </ul>
+                    <p><strong>Solution classique (sans Docker) :</strong></p>
+                    <ul>
+                        <li>🔄 Changer de version à chaque fois qu'on change de projet (long et risqué)</li>
+                        <li>💻 Utiliser plusieurs machines virtuelles (lourd, lent, consomme beaucoup de ressources)
+                        </li>
+                        <li>🖥️ Avoir plusieurs ordinateurs (coûteux pour l'entreprise)</li>
+                    </ul>
+                    <p><strong>Résultat :</strong> Perte de temps énorme, frustration, et risque de casser les projets
+                        en production !</p>
+                </div>
+
+                <h4>🚨 Problème #4 : Déploiement en Production = Stress</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ PROCESSUS DE DÉPLOIEMENT TRADITIONNEL                   │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 1. Développeur : "Ça marche sur mon PC" ✅             │
+│                                                           │
+│ 2. Test : "Ça marche sur le serveur de test" ✅        │
+│                                                           │
+│ 3. Production : "❌ ERREUR !"                            │
+│    - Version de Node.js différente                       │
+│    - Variables d'environnement manquantes                │
+│    - Permissions incorrectes                             │
+│    - Ports déjà utilisés                                 │
+│                                                           │
+│ 4. Debugging en urgence à 2h du matin 😰                │
+│                                                           │
+│ 5. Rollback et perte de temps                            │
+│                                                           │
+│ ⏱️ Temps perdu : 4-8 heures                              │
+│ 😰 Stress : Maximum                                       │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>1.2 - Comment Docker Simplifie la Vie des Développeurs</h3>
+
+                <h4>✨ Solution Docker : Une Boîte Magique pour Tout le Monde</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ AVEC DOCKER : Tout le Monde a la Même Boîte             │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 👨‍💻 Personne 1 (sur Windows)                            │
+│ └─ Ouvre la boîte Docker                                │
+│    ✅ Tout fonctionne immédiatement !                    │
+│                                                           │
+│ 👩‍💻 Personne 2 (sur Mac)                                │
+│ └─ Ouvre la même boîte Docker                           │
+│    ✅ Exactement la même chose, ça marche !              │
+│                                                           │
+│ 🖥️ Le Serveur (sur Linux)                               │
+│ └─ Ouvre la même boîte Docker                           │
+│    ✅ Exactement pareil, ça marche aussi !               │
+│                                                           │
+│ 🎯 Résultat :                                           │
+│    - Tout le monde a exactement la même boîte            │
+│    - Plus de "ça marche chez moi mais pas chez toi"     │
+│    - Il suffit d'ouvrir la boîte (1 commande)           │
+│    - Temps gagné : 90% (au lieu de 3 heures, 5 minutes) │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <p><strong>En langage simple :</strong></p>
+                <p>Avec Docker, c'est comme si tu donnais à tout le monde <strong>exactement la même boîte à
+                        lunch</strong> avec le même sandwich, les mêmes chips, et la même fourchette. Peu importe où ils
+                    ouvrent la boîte, tout est identique et ça fonctionne !</p>
+
+                <h4>💡 Avantages Concrets pour les Développeurs</h4>
+                <div class="advantages">
+                    <p><strong>1. Setup Instantané :</strong> Au lieu de 2-3 heures de configuration, un simple
+                        <code>docker-compose up</code> et tout fonctionne en 30 secondes.
+                    </p>
+                    <p><strong>2. Isolation Parfaite :</strong> Chaque projet a son propre environnement isolé. Plus de
+                        conflits entre projets.</p>
+                    <p><strong>3. Reproducibilité :</strong> Le même conteneur fonctionne identiquement sur Windows,
+                        Mac, Linux, et en production.</p>
+                    <p><strong>4. Collaboration Facile :</strong> Partagez un simple fichier
+                        <code>docker-compose.yml</code> et tout le monde a le même environnement.
+                    </p>
+                    <p><strong>5. Déploiement Simplifié :</strong> "Si ça marche en local, ça marchera en production" -
+                        c'est garanti !</p>
+                    <p><strong>6. Rollback Rapide :</strong> Problème en production ? Revenir à la version précédente en
+                        10 secondes.</p>
+                </div>
+
+                <h4>📊 Comparaison Avant/Après</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Avant Docker</th>
+                            <th>Avec Docker</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Temps de setup</strong></td>
+                            <td>2-3 heures</td>
+                            <td><strong>30 secondes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Problèmes "ça marche chez moi"</strong></td>
+                            <td>Fréquents</td>
+                            <td><strong>Zéro</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Déploiement en production</strong></td>
+                            <td>4-8 heures (avec stress)</td>
+                            <td><strong>5 minutes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rollback</strong></td>
+                            <td>Complexe, plusieurs heures</td>
+                            <td><strong>10 secondes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Collaboration</strong></td>
+                            <td>Documentation longue, erreurs fréquentes</td>
+                            <td><strong>1 fichier docker-compose.yml</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <article class="sub-section">
+                <h3>1.3 - Définition Simple de Docker</h3>
+                <p><strong>Docker, c'est comme une boîte magique !</strong></p>
+                <p>Imagine que tu veux envoyer un gâteau à ton ami qui habite loin. Au lieu d'envoyer juste la recette
+                    (qui pourrait ne pas fonctionner avec ses ingrédients), tu mets <strong>tout ce qu'il faut dans une
+                        boîte</strong> : le gâteau, les ingrédients, les ustensiles, et même les instructions.</p>
+
+                <p>Avec Docker, c'est pareil ! Au lieu d'envoyer juste le code de ton programme, tu mets <strong>tout
+                        dans une boîte</strong> :</p>
+                <ul>
+                    <li>✅ Ton programme (le code que tu as écrit)</li>
+                    <li>✅ Tous les outils nécessaires (comme PHP, MySQL, etc.)</li>
+                    <li>✅ Les réglages et configurations</li>
+                    <li>✅ Tout ce dont le programme a besoin pour fonctionner</li>
+                </ul>
+
+                <p>Cette boîte s'appelle un <strong>conteneur</strong>. C'est comme une petite maison où vit ton
+                    programme avec tout ce dont il a besoin !</p>
+
+                <blockquote class="analogy">
+                    <h4>Analogie : Le conteneur maritime 🚢</h4>
+                    <p><strong>Imagine un port de marchandises :</strong></p>
+                    <ul>
+                        <li><strong>Avant :</strong> On chargeait les marchandises directement sur le bateau, une par
+                            une. C'était compliqué, ça pouvait se mélanger, et chaque bateau devait tout réorganiser.
+                        </li>
+                        <li><strong>Après :</strong> On met tout dans un conteneur standard. Le conteneur peut être mis
+                            sur n'importe quel bateau, transporté partout, et ouvert n'importe où. C'est beaucoup plus
+                            simple !</li>
+                    </ul>
+                    <p><strong>Avec Docker, c'est exactement pareil !</strong></p>
+                    <p>Au lieu de dire "ça marche sur mon ordinateur mais peut-être pas sur le tien", tu dis <strong>"ça
+                            marche dans cette boîte, et cette boîte fonctionne partout !"</strong></p>
+                </blockquote>
+
+                <h4>Schéma : Ta Boîte Magique Docker</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ TA BOÎTE MAGIQUE DOCKER (Le Conteneur)                  │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ 🎁 LA BOÎTE (Conteneur Docker)      │                │
+│  │ ┌─────────────────────────────────┐ │                │
+│  │ │ 📱 Ton Programme                │ │                │
+│  │ │    (ce que tu as créé)          │ │                │
+│  │ │                                  │ │                │
+│  │ │ 🛠️ Les Outils Nécessaires        │ │                │
+│  │ │    (PHP, MySQL, etc.)           │ │                │
+│  │ │                                  │ │                │
+│  │ │ 📋 Les Instructions              │ │                │
+│  │ │    (comment tout faire marcher) │ │                │
+│  │ │                                  │ │                │
+│  │ │ ⚙️ Les Réglages                  │ │                │
+│  │ │    (les paramètres)             │ │                │
+│  │ └─────────────────────────────────┘ │                │
+│  │                                      │                │
+│  │ ✅ Tout est dans la boîte !         │                │
+│  │ ✅ La boîte fonctionne partout !    │                │
+│  │ ✅ Rien ne peut sortir de la boîte  │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  Cette boîte peut être ouverte sur :                     │
+│  • 💻 Un ordinateur Windows                              │
+│  • 🍎 Un ordinateur Mac                                  │
+│  • 🐧 Un ordinateur Linux                                │
+│  • ☁️ Un serveur dans le cloud                           │
+│                                                           │
+│  🎯 Résultat : La boîte fonctionne de la même façon      │
+│     partout, peu importe où tu l'ouvres !                │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <p><strong>En résumé :</strong> Docker, c'est comme une boîte à lunch ! Tu mets dedans ton sandwich, tes
+                    chips, ton dessert, et même une fourchette. Peu importe où tu ouvres la boîte (à l'école, au parc,
+                    chez un ami), tout est là et prêt à être utilisé !</p>
+            </article>
+        </section>
+
+        <section id="collaboration-developpeurs" class="chapter-section">
+            <h2 class="chapter-title">SECTION 1.5 : Collaboration entre Développeurs</h2>
+
+            <article class="sub-section">
+                <h3>Scénario : Deux Développeurs Travaillent sur le Même Projet</h3>
+                <p>Imaginons que <strong>Développeur A</strong> crée un projet Laravel et veut que <strong>Développeur
+                        B</strong> puisse travailler dessus. Comparons les deux approches :</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>❌ PRATIQUE TRADITIONNELLE (Sans Docker)</h3>
+
+                <h4>Étape 1 : Développeur A crée le projet</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ DÉVELOPPEUR A - CRÉATION DU PROJET                      │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 1. Installe PHP 8.2 sur sa machine                      │
+│ 2. Installe Composer                                     │
+│ 3. Installe MySQL 8.0                                    │
+│ 4. Configure les extensions PHP                          │
+│ 6. Configure MySQL (utilisateur, mot de passe)          │
+│ 7. Crée le projet Laravel                                │
+│ 8. Configure .env avec ses paramètres locaux            │
+│                                                           │
+│ ⏱️ Temps : 2-3 heures de configuration                  │
+│ ✅ Projet fonctionne sur sa machine                     │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>Étape 2 : Développeur A partage le projet</h4>
+                <pre class="code-example"><code class="bash">
+# Développeur A pousse le code sur Git
+git add .
+git commit -m "Initial commit"
+git push origin main
+                </code></pre>
+
+                <h4>Étape 3 : Développeur B récupère le projet</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ DÉVELOPPEUR B - CONFIGURATION MANUELLE                  │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 1. Clone le projet depuis Git                            │
+│    git clone https://github.com/team/projet.git          │
+│                                                           │
+│ 2. ❌ DOIT INSTALLER PHP 8.2                            │
+│    - Télécharger depuis php.net                          │
+│    - Configurer les extensions (pdo_mysql, etc.) │
+│    - Configurer php.ini                                   │
+│    ⏱️ Temps : 30-60 minutes                             │
+│                                                           │
+│ 3. ❌ DOIT INSTALLER COMPOSER                            │
+│    - Télécharger et installer                            │
+│    - Configurer dans le PATH                             │
+│    ⏱️ Temps : 15 minutes                                │
+│                                                           │
+│ 4. ❌ DOIT INSTALLER MYSQL 8.0                           │
+│    - Installer MySQL Server                               │
+│    - Créer la base de données                            │
+│    - Créer l'utilisateur                                  │
+│    - Configurer les permissions                           │
+│    ⏱️ Temps : 30-45 minutes                             │
+│                                                           │
+│ 6. ❌ DOIT CONFIGURER LE .ENV                            │
+│    - Copier .env.example                                 │
+│    - Modifier les paramètres (DB_HOST, DB_PASSWORD, etc.) │
+│    - Adapter à sa configuration locale                   │
+│    ⏱️ Temps : 15-30 minutes                             │
+│                                                           │
+│ 7. ❌ DOIT INSTALLER LES DÉPENDANCES                     │
+│    composer install                                       │
+│    npm install                                            │
+│    ⏱️ Temps : 10-20 minutes                             │
+│                                                           │
+│ 8. ❌ DOIT CONFIGURER LA BASE DE DONNÉES                 │
+│    php artisan migrate                                   │
+│    php artisan db:seed                                   │
+│    ⏱️ Temps : 10 minutes                                │
+│                                                           │
+│ 9. ❌ PROBLÈMES POTENTIELS :                            │
+│    - Version PHP différente → Erreurs                    │
+│    - Extensions manquantes → Erreurs                     │
+│    - Configuration MySQL différente → Erreurs            │
+│    - Ports déjà utilisés → Conflits                      │
+│    ⏱️ Temps de debugging : 1-3 heures                    │
+│                                                           │
+│ ⏱️ TEMPS TOTAL : 3-5 HEURES                             │
+│ 😰 FRUSTRATION : Élevée                                  │
+│ ❌ RISQUE D'ERREURS : Très élevé                         │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>Résumé de la Pratique Traditionnelle</h4>
+                <div class="problem-box">
+                    <p><strong>Problèmes rencontrés :</strong></p>
+                    <ul>
+                        <li>❌ Chaque développeur doit installer et configurer manuellement tous les outils</li>
+                        <li>❌ Risque de versions différentes (PHP 8.1 vs 8.2, MySQL 5.7 vs 8.0)</li>
+                        <li>❌ Configuration complexe et sujette aux erreurs</li>
+                        <li>❌ Temps perdu : 3-5 heures par nouveau développeur</li>
+                        <li>❌ "Ça marche chez moi" - problèmes fréquents</li>
+                        <li>❌ Documentation souvent obsolète ou incomplète</li>
+                    </ul>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>Comparaison Côte à Côte</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Étape</th>
+                            <th>❌ Sans Docker</th>
+                            <th>✅ Avec Docker</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Installation PHP</strong></td>
+                            <td>30-60 min (manuelle)</td>
+                            <td><strong>0 min</strong> (automatique)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Installation MySQL</strong></td>
+                            <td>30-45 min (manuelle)</td>
+                            <td><strong>0 min</strong> (automatique)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuration Composer</strong></td>
+                            <td>20-30 min (manuelle)</td>
+                            <td><strong>0 min</strong> (automatique)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuration .env</strong></td>
+                            <td>15-30 min (manuelle, erreurs fréquentes)</td>
+                            <td><strong>1 min</strong> (copier .env.example)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Installation dépendances</strong></td>
+                            <td>10-20 min</td>
+                            <td><strong>2-3 min</strong> (automatique)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuration base de données</strong></td>
+                            <td>10 min + debugging</td>
+                            <td><strong>30 sec</strong> (migrate)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Résolution de problèmes</strong></td>
+                            <td>1-3 heures (versions, configs)</td>
+                            <td><strong>0 min</strong> (tout fonctionne)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TEMPS TOTAL</strong></td>
+                            <td><strong>3-5 heures</strong></td>
+                            <td><strong>5-7 minutes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frustration</strong></td>
+                            <td>😰 Élevée</td>
+                            <td>😊 Nulle</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Risque d'erreurs</strong></td>
+                            <td>❌ Très élevé</td>
+                            <td>✅ Quasi-nul</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Environnement identique</strong></td>
+                            <td>❌ Rarement</td>
+                            <td>✅ Toujours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <article class="sub-section">
+                <h3>Cas d'Usage : Partage d'Image Docker Personnalisée</h3>
+
+                <h4>Scénario Avancé : Développeur A crée une image custom</h4>
+                <p>Si le projet nécessite des configurations spéciales, le Développeur A peut créer et partager une
+                    image Docker personnalisée :</p>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ PARTAGE D'IMAGE DOCKER PERSONNALISÉE                    │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  DÉVELOPPEUR A                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ 1. Crée un Dockerfile custom        │                │
+│  │    FROM php:8.2-fpm                  │                │
+│  │    RUN apt-get install -y ...        │                │
+│  │    # Configurations spéciales        │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 2. Build l'image                             │
+│           ▼                                              │
+│  ┌─────────────────────────────────────┐                │
+│  │ docker build -t mon-projet:1.0 .    │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 3. Push sur Docker Hub                       │
+│           ▼                                              │
+│  ┌─────────────────────────────────────┐                │
+│  │ docker tag mon-projet:1.0           │                │
+│  │   monusername/mon-projet:1.0         │                │
+│  │ docker push monusername/mon-projet   │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 4. Met à jour docker-compose.yml             │
+│           ▼                                              │
+│  ┌─────────────────────────────────────┐                │
+│  │ services:                            │                │
+│  │   app:                               │                │
+│  │     image: monusername/mon-projet:1.0│                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 5. Commit et push                            │
+│           ▼                                              │
+│  GITHUB                                                  │
+│                                                           │
+│  DÉVELOPPEUR B                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ 6. Clone le repo                    │                │
+│  │ 7. docker-compose up                │                │
+│  │    → Télécharge automatiquement     │                │
+│  │      l'image personnalisée !        │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  ✅ Même image custom pour toute l'équipe !             │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </article>
+
+        </section>
+
+        <section id="archi-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 2 : Architecture de Docker</h2>
+
+            <article class="sub-section">
+                <h3>2.1 - Composants Principaux</h3>
+                <ul class="key-components">
+                    <li><strong>Docker Engine :</strong> L'ensemble du système, le "moteur" qui fait tourner tout
+                        Docker.</li>
+                    <li><strong>Docker Daemon (dockerd) :</strong> Processus de fond qui gère images, conteneurs,
+                        réseaux.</li>
+                    <li><strong>Docker Client (CLI) :</strong> Outil en ligne de commande (<code>docker run</code>,
+                        <code>docker ps</code>) qui envoie les requêtes au Daemon.
+                    </li>
+                    <li><strong>Docker Images :</strong> Template <strong>en lecture seule</strong>. Le "snapshot" d'un
+                        conteneur.</li>
+                    <li><strong>Docker Containers :</strong> <strong>Instance en exécution</strong> d'une image. Peut
+                        être arrêté, redémarré.</li>
+                    <li><strong>Docker Registries :</strong> Base de données d'images publiques (Docker Hub) ou privées.
+                    </li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>2.2 - Schéma d'Architecture Global</h3>
+                <div class="code-block architecture-global">
+                    <pre>
+┌─────────────────────────────────────────────────────────────┐
+│ INFRASTRUCTURE DOCKER │
+├─────────────────────────────────────────────────────────────┤
+│ ┌────────────────────────────────────────────────────────┐ │
+│ │ VOTRE MACHINE / SERVEUR │ │
+│ │ ┌─────────────────────────────────────────────────┐ │ │
+│ │ │ SYSTÈME D'EXPLOITATION (Linux/Mac) │ │ │
+│ │ │ ┌──────────────────────────────────────────┐ │ │ │
+│ │ │ │ DOCKER DAEMON (dockerd) │ │ │ │
+│ │ │ └──────────────────────────────────────────┘ │ │ │
+│ │ │ ▲ (socket unix/TCP) │ │ │
+│ │ │ ┌──────────────────┴──────────────────────┐ │ │ │
+│ │ │ │ DOCKER CLIENT (CLI) │ │ │ │
+│ │ │ └─────────────────────────────────────────┤ │ │ │
+│ │ │ ┌─────────────────────────────────────────┐ │ │ │
+│ │ │ │ IMAGES LOCALES (Storage) │ │ │ │
+│ │ │ └─────────────────────────────────────────┘ │ │ │
+│ │ │ ┌─────────────────────────────────────────┐ │ │ │
+│ │ │ │ CONTENEURS EN EXÉCUTION │ │ │ │
+│ │ │ └─────────────────────────────────────────┘ │ │ │
+│ │ └──────────────────────────────────────────────────┘ │ │
+│ ◄───────────────────────────────────────────────────────►
+│ Demandes : docker pull, push, build, run, etc.
+│ ┌────────────────────────────────────────────────────────┐ │
+│ │ DOCKER REGISTRIES (Cloud) │ │
+│ │ ├─ Docker Hub (officiel) │ │
+│ │ └─ Docker Registry Privé │ │
+│ └─────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>2.3 - Comparaison : Machines Virtuelles vs Conteneurs Docker</h3>
+                <h4>Schéma Conceptuel : Architecture Comparée</h4>
+                <div class="code-block architecture">
+                    <pre>
+╔═══════════════════════════════════════════════════╗
+║ MACHINE TRADITIONNELLE ║
+╠═══════════════════════════════════════════════════╣
+║ Serveur Physique ║
+│ └─ Système d'exploitation Host (4GB) │
+│ └─ Hyperviseur (VMware, VirtualBox) │
+│ ├─ VM 1 (4GB) : OS complet Linux (2GB) │
+│ │ └─ App 1 │
+│ ├─ VM 2 (4GB) : OS complet Linux (2GB) │
+│ │ └─ App 2 │
+│ └─ VM 3 (4GB) : OS complet Linux (2GB) │
+│ └─ App 3 │
+│ Consommation TOTALE : ~14GB RAM │
+└───────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════╗
+║ DOCKER (CONTENEURS) ║
+╠═══════════════════════════════════════════════════╣
+║ Serveur Physique ║
+│ └─ Système d'exploitation Host (4GB) │
+│ └─ Docker Engine │
+│ ├─ Container 1 (300MB) : App 1 │
+│ ├─ Container 2 (300MB) : App 2 │
+│ └─ Container 3 (300MB) : App 3 │
+│ Consommation TOTALE : ~5GB RAM │
+└───────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>Tableau Comparatif</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Machines Virtuelles (VM)</th>
+                            <th>Conteneurs Docker</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Système d'exploitation</strong></td>
+                            <td>OS complet dupliqué</td>
+                            <td>Partage le <strong>kernel du host</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Taille d'une instance</strong></td>
+                            <td>2-5 GB</td>
+                            <td>100 MB - 500 MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Temps de démarrage</strong></td>
+                            <td>1-2 minutes</td>
+                            <td><strong>1-2 secondes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consommation mémoire</strong></td>
+                            <td>Élevée (x4, x8)</td>
+                            <td><strong>Basse</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Densité (nb instances)</strong></td>
+                            <td>5-10 par serveur</td>
+                            <td><strong>100-1000 par serveur</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Portabilité</strong></td>
+                            <td>Dépend de l'hyperviseur</td>
+                            <td><strong>Universelle</strong> (Linux)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><strong>Résumé :</strong> Les conteneurs sont comme des processus isolés, pas des machines virtuelles
+                    complètes.</p>
+            </article>
+        </section>
+
+        <section id="images-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 3 : Les Images Docker</h2>
+
+            <article class="sub-section">
+                <h3>3.1 - C'est Quoi une Image ?</h3>
+                <p><strong>Une image Docker, c'est comme un moule à gâteau !</strong></p>
+                <p>Imagine que tu as un moule en forme d'étoile. Tu ne peux pas changer la forme du moule (il est
+                    "immuable", comme on dit), mais tu peux faire <strong>autant de gâteaux en forme d'étoile que tu
+                        veux</strong> avec ce moule !</p>
+
+                <p><strong>Dans Docker :</strong></p>
+                <ul>
+                    <li>🍰 <strong>L'image</strong> = Le moule (tu ne peux pas le modifier)</li>
+                    <li>🎂 <strong>Le conteneur</strong> = Le gâteau que tu fais avec le moule (tu peux l'utiliser, le
+                        manger, en refaire un autre)</li>
+                </ul>
+
+                <p>L'image contient :</p>
+                <ul>
+                    <li>✅ Ton programme (le code)</li>
+                    <li>✅ Tous les outils nécessaires (PHP, MySQL, etc.)</li>
+                    <li>✅ Les instructions (comment tout faire marcher)</li>
+                    <li>✅ Les réglages (les paramètres)</li>
+                </ul>
+
+                <p><strong>Important :</strong> Tu ne peux pas modifier une image. Si tu veux changer quelque chose, tu
+                    dois créer une nouvelle image. Mais tu peux créer plein de conteneurs à partir d'une seule image !
+                </p>
+            </article>
+
+            <article class="sub-section">
+                <h3>3.2 - Layers et Système Union FS </h3>
+                <h4>Concept des Layers</h4>
+                <div class="code-block architecture-layers">
+                    <pre>
+┌─────────────────────────────────────┐
+│ Layer 5 (Lecture-Écriture)          │ ◄── Conteneur en cours (changements)
+├─────────────────────────────────────┤
+│ Layer 4 (Lecture-Seule)             │ ◄── ADD/COPY app code
+├─────────────────────────────────────┤
+│ Layer 3 (Lecture-Seule)             │ ◄── RUN npm install (Dépendances)
+├─────────────────────────────────────┤
+│ Layer 2 (Lecture-Seule)             │ ◄── RUN apt-get install (Paquets)
+├─────────────────────────────────────┤
+│ Layer 1 (Lecture-Seule)             │ ◄── FROM ubuntu:22.04 (OS de base)
+└─────────────────────────────────────┘
+                    </pre>
+                </div>
+                <p><strong>Avantages :</strong> <strong>Cache</strong> pendant le build,
+                    <strong>Réutilisabilité</strong> des layers partagés,
+                    <strong>Efficacité</strong> de stockage.
+                </p>
+            </article>
+
+            <article class="sub-section">
+                <h3>3.3 - Comment Créer une Image ?</h3>
+                <p>Pour créer une image (un moule), tu as plusieurs façons de faire :</p>
+                <ul>
+                    <li><strong>Dockerfile (La Meilleure Méthode) :</strong> C'est comme une recette écrite. Tu écris
+                        les instructions dans un fichier texte, et Docker fabrique le moule pour toi !</li>
+                    <li><strong>docker commit (Rarement Utilisé) :</strong> C'est comme prendre une photo d'une boîte
+                        que tu as déjà modifiée. Pas très pratique !</li>
+                    <li><strong>Import depuis un fichier :</strong> C'est comme importer un moule depuis un autre
+                        endroit.</li>
+                </ul>
+                <p><strong>💡 Astuce :</strong> Utilise toujours un Dockerfile ! C'est comme avoir une recette écrite :
+                    n'importe qui peut la suivre et obtenir le même résultat.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>3.4 - Dockerfile : Syntaxe et Best Practices</h3>
+                <p>Le <strong>Dockerfile</strong> est la méthode **recommandée** pour créer des images. Il liste les
+                    instructions de construction.</p>
+
+                <h4>Exemple Simple : Application Node.js</h4>
+                <pre class="code-example"><code class="dockerfile">
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]
+                </code></pre>
+
+                <h4>Exemple Complexe : Application Python avec Multi-stage Build</h4>
+                <pre class="code-example"><code class="dockerfile">
+# Stage 1 : Build
+FROM python:3.11-slim as builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+
+# Stage 2 : Runtime
+FROM python:3.11-slim
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+COPY . .
+ENV PATH=/root/.local/bin:$PATH
+EXPOSE 8000
+CMD ["python", "app.py"]
+                </code></pre>
+
+                <h4>Instructions Clés (Tableau)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Instruction</th>
+                            <th>Rôle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>FROM</strong></td>
+                            <td>Le point de départ (obligatoire). C'est comme dire "commence avec ce moule de base"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RUN</strong></td>
+                            <td>Fais quelque chose pendant la fabrication. C'est comme dire "ajoute du sucre" pendant
+                                que tu prépares le gâteau</td>
+                        </tr>
+                        <tr>
+                            <td><strong>COPY</strong></td>
+                            <td>Copie des fichiers. C'est comme mettre des ingrédients dans le moule</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CMD</strong></td>
+                            <td>Ce qui se passe quand on ouvre la boîte. C'est comme dire "quand tu ouvres la boîte,
+                                lance le jeu"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EXPOSE</strong></td>
+                            <td>Dit quel port utiliser. C'est comme dire "la porte d'entrée est le numéro 80"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WORKDIR</strong></td>
+                            <td>Où on travaille. C'est comme dire "va dans la cuisine"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ENV</strong></td>
+                            <td>Définit des réglages. C'est comme dire "la température du four est 180°C"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ARG</strong></td>
+                            <td>Des informations qu'on donne pendant la fabrication</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ADD</strong></td>
+                            <td>Comme COPY, mais peut aussi télécharger depuis internet</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ENTRYPOINT</strong></td>
+                            <td>La commande principale (on ne peut pas la changer). C'est comme la recette de base qu'on
+                                doit toujours suivre</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Best Practices Complètes</h4>
+                <ul>
+                    <li>✅ <strong>Minimiser les Layers :</strong> Combiner les commandes <code>RUN</code> avec
+                        <code>&&</code> (Ex : <code>RUN apt-get update && apt-get install...</code>)
+                    </li>
+                    <li>✅ <strong>Maximiser le Cache :</strong> Placer les instructions qui changent le moins (Ex:
+                        dépendances) avant le code source (Ex: <code>COPY requirements.txt</code> avant
+                        <code>COPY .</code>).
+                    </li>
+                    <li>✅ <strong>Ne pas Utiliser root :</strong> Créer et utiliser un utilisateur dédié
+                        (<code>RUN useradd -m appuser && USER appuser</code>).</li>
+                    <li>✅ <strong>Utiliser .dockerignore :</strong> Exclure les fichiers inutiles (comme
+                        <code>node_modules</code>, <code>.git</code>) du contexte de build.
+                    </li>
+                    <li>✅ <strong>Utiliser des images officielles :</strong> Préférer <code>node:18-alpine</code> plutôt
+                        que construire depuis zéro.</li>
+                    <li>✅ <strong>Multi-stage builds :</strong> Réduire la taille finale en séparant build et runtime.
+                    </li>
+                    <li>✅ <strong>Tag explicite :</strong> Éviter <code>latest</code> en production, utiliser des
+                        versions (<code>node:18.17.0</code>).</li>
+                </ul>
+
+                <h4>💡 Astuce : .dockerignore</h4>
+                <pre class="code-example"><code>
+node_modules
+.git
+.env
+*.log
+.DS_Store
+dist
+build
+                </code></pre>
+            </article>
+        </section>
+
+        <section id="conteneurs-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 4 : Les Conteneurs Docker (Les Boîtes)</h2>
+
+            <article class="sub-section">
+                <h3>4.1 - La Vie d'une Boîte Docker</h3>
+                <p><strong>Une boîte Docker, c'est comme une boîte à lunch. Elle peut être dans différents états
+                        :</strong></p>
+                <div class="code-block lifecycle">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ LA VIE D'UNE BOÎTE DOCKER                                │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  ┌──────────────┐                                        │
+│  │ N'existe pas │  ◄─── La boîte n'existe pas encore    │
+│  └──────┬───────┘                                        │
+│         │                                                 │
+│         │ Tu crées la boîte                               │
+│         ▼                                                 │
+│  ┌──────────────┐                                        │
+│  │ Créée        │  ◄─── La boîte existe mais est fermée │
+│  └──────┬───────┘                                        │
+│         │                                                 │
+│         │ Tu ouvres la boîte                              │
+│         ▼                                                 │
+│  ┌──────────────┐                                        │
+│  │ Ouverte      │  ◄─── La boîte est ouverte et active   │
+│  └──────┬───────┘    │                                   │
+│         │            │                                   │
+│         │            │ Tu mets en pause                   │
+│         │            ▼                                   │
+│         │     ┌──────────────┐                          │
+│         │     │ En pause     │  ◄─── La boîte est en pause│
+│         │     └──────┬───────┘                          │
+│         │            │                                   │
+│         │            │ Tu reprends                        │
+│         │            │                                   │
+│         │            └─────────┐                          │
+│         │                     │                          │
+│         │ Tu fermes la boîte  │                          │
+│         ▼                     ▼                          │
+│  ┌──────────────┐    ┌──────────────┐                  │
+│  │ Fermée       │    │ Arrêtée      │                  │
+│  └──────┬───────┘    └──────────────┘                  │
+│         │                                                 │
+│         │ Tu jettes la boîte                              │
+│         ▼                                                 │
+│  ┌──────────────┐                                        │
+│  │ N'existe plus│  ◄─── La boîte a été supprimée         │
+│  └──────────────┘                                        │
+│                                                           │
+│  💡 Les commandes principales :                         │
+│     • docker run    : Crée la boîte + l'ouvre           │
+│     • docker start  : Ouvre une boîte fermée            │
+│     • docker stop   : Ferme la boîte gentiment           │
+│     • docker kill   : Ferme la boîte de force            │
+│     • docker pause  : Met la boîte en pause              │
+│     • docker rm     : Jette la boîte                     │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+                <p><strong>En langage simple :</strong> C'est comme une boîte à lunch que tu peux créer, ouvrir, fermer,
+                    mettre en pause, et jeter. Chaque état a sa commande !</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>4.2 - Commandes Essentielles</h3>
+                <h4>Créer et Lancer (Run)</h4>
+                <pre class="code-example"><code class="bash">
+# Mode interactif (terminal attaché)
+docker run -it ubuntu:22.04 bash
+
+# Mode detached (-d) avec nom (--name) et redirection de ports (-p)
+docker run -d --name my-web -p 8080:80 nginx:latest
+                </code></pre>
+
+                <h4>Afficher et Gérer</h4>
+                <pre class="code-example"><code class="bash">
+# Lister les conteneurs en cours d'exécution
+docker ps
+
+# Afficher les logs en temps réel
+docker logs -f my-container
+
+# Exécuter une commande dans un conteneur qui tourne
+docker exec -it my-container bash
+                </code></pre>
+
+                <h4>Arrêt et Suppression</h4>
+                <pre class="code-example"><code class="bash">
+# Arrêter, puis supprimer
+docker stop my-container
+docker rm my-container
+
+# Supprimer tous les conteneurs arrêtés
+docker container prune
+
+# Arrêter et supprimer en une commande
+docker rm -f my-container
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>4.3 - Deux Façons d'Ouvrir une Boîte</h3>
+
+                <h4>Mode Interactif (-it) : Tu Regardes Dedans</h4>
+                <pre class="code-example"><code class="bash">
+# Tu ouvres la boîte et tu peux voir ce qui se passe dedans
+docker run -it ubuntu:22.04 bash
+
+# C'est comme ouvrir une boîte et regarder à l'intérieur
+# Utile pour : tester, explorer, déboguer
+                </code></pre>
+
+                <h4>Mode Detached (-d) : La Boîte Tourne en Arrière-Plan</h4>
+                <pre class="code-example"><code class="bash">
+# La boîte est ouverte mais tourne en arrière-plan
+docker run -d --name web nginx:latest
+
+# C'est comme laisser une boîte ouverte dans une autre pièce
+# Tu ne la regardes pas, mais elle fonctionne
+# Utile pour : les services qui doivent tourner tout le temps
+                </code></pre>
+
+                <p><strong>En résumé :</strong></p>
+                <ul>
+                    <li>👀 <strong>Mode interactif</strong> = Tu regardes la boîte (utile pour tester)</li>
+                    <li>🔇 <strong>Mode detached</strong> = La boîte tourne sans que tu la regardes (utile pour les
+                        services)</li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>4.4 - Logs et Debugging</h3>
+                <pre class="code-example"><code class="bash">
+# Voir les logs
+docker logs my-container
+
+# Suivre les logs en temps réel
+docker logs -f my-container
+
+# Dernières 100 lignes
+docker logs --tail 100 my-container
+
+# Logs avec timestamp
+docker logs -t my-container
+
+# Inspecter un conteneur (config complète)
+docker inspect my-container
+
+# Statistiques en temps réel
+docker stats my-container
+                </code></pre>
+                <p><strong>💡 Astuce :</strong> Utilisez <code>docker exec -it container bash</code> pour entrer dans un
+                    conteneur en cours d'exécution et déboguer.</p>
+            </article>
+        </section>
+
+        <section id="networking-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 5 : Comment les Boîtes se Parlent (Réseau)</h2>
+
+            <article class="sub-section">
+                <h3>5.1 - Comment les Boîtes Communiquent Entre Elles</h3>
+                <p><strong>Imagine que tes boîtes Docker sont comme des maisons dans un quartier :</strong></p>
+                <ul>
+                    <li><strong>Bridge (Par Défaut) :</strong> C'est comme un quartier où chaque maison a son adresse.
+                        Les maisons peuvent se parler, mais elles sont séparées.</li>
+                    <li><strong>User-defined bridge (Recommandé) :</strong> C'est comme créer ton propre quartier. Les
+                        maisons peuvent se parler en utilisant leurs noms (comme "maison-de-papa") au lieu de numéros
+                        compliqués !</li>
+                    <li><strong>Host :</strong> C'est comme partager le même téléphone avec tout le monde. Plus rapide,
+                        mais moins sécurisé.</li>
+                    <li><strong>Overlay :</strong> C'est pour quand tes maisons sont dans des villes différentes mais
+                        doivent quand même se parler.</li>
+                </ul>
+
+                <h4>Créer Ton Propre Quartier (Réseau Custom)</h4>
+                <pre class="code-example"><code class="bash">
+# 1. Créer un nouveau quartier (réseau)
+docker network create mon-quartier
+
+# 2. Mettre des maisons dans ce quartier
+docker run -d --network mon-quartier --name db mysql:8.0
+docker run -d --network mon-quartier --name app mon-app:latest
+
+# Maintenant, depuis la maison "app", tu peux appeler la maison "db" par son nom !
+# C'est comme dire "appelle db" au lieu de "appelle le 192.168.1.5"
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>5.2 - Le Système de Noms (DNS Interne)</h3>
+                <p><strong>Docker a un système magique qui transforme les noms en adresses !</strong></p>
+                <p>C'est comme avoir un carnet d'adresses : au lieu de se souvenir que la maison de ton ami est au
+                    "192.168.1.5", tu dis juste "maison-de-papa" et Docker trouve l'adresse tout seul !</p>
+                <p><strong>En pratique :</strong> Dans ton programme, tu dis juste <code>host=db</code> au lieu d'une
+                    adresse compliquée comme "192.168.1.5". C'est beaucoup plus simple !</p>
+
+                <h4>Exemple Pratique : Application + Base de Données</h4>
+                <pre class="code-example"><code class="bash">
+# Créer un réseau
+docker network create app-network
+
+# Lancer la base de données
+docker run -d --network app-network --name db \
+  -e MYSQL_ROOT_PASSWORD=secret mysql:8.0
+
+# Lancer l'application (elle peut se connecter à "db")
+docker run -d --network app-network --name app \
+  -e DB_HOST=db my-app:latest
+
+# Depuis l'app, la connexion à "db" fonctionne automatiquement !
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>5.3 - Types de Réseaux Complets</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Usage</th>
+                            <th>Isolation</th>
+                            <th>DNS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>bridge</strong></td>
+                            <td>Par défaut, isolation basique</td>
+                            <td>Oui</td>
+                            <td>Non (sauf user-defined)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>host</strong></td>
+                            <td>Performance maximale</td>
+                            <td>Non</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td><strong>none</strong></td>
+                            <td>Aucun réseau</td>
+                            <td>Complète</td>
+                            <td>Non</td>
+                        </tr>
+                        <tr>
+                            <td><strong>overlay</strong></td>
+                            <td>Multi-hôte (Swarm/K8s)</td>
+                            <td>Oui</td>
+                            <td>Oui</td>
+                        </tr>
+                        <tr>
+                            <td><strong>macvlan</strong></td>
+                            <td>Adresse MAC directe</td>
+                            <td>Oui</td>
+                            <td>Non</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </section>
+
+        <section id="volumes-stockage" class="chapter-section">
+            <h2 class="chapter-title">SECTION 6 : Volumes et Stockage (Sauvegarder les Données)</h2>
+
+            <article class="sub-section">
+                <h3>6.1 - Pourquoi il Faut Sauvegarder les Données ?</h3>
+                <p><strong>Imagine ta boîte Docker comme une boîte à lunch :</strong></p>
+                <p>Quand tu jettes la boîte, tout ce qui était dedans est perdu ! C'est pareil avec Docker : si tu
+                    supprimes une boîte (conteneur), toutes les données dedans disparaissent.</p>
+                <p><strong>Le problème :</strong> Tu ne veux pas perdre tes données importantes (comme les informations
+                    de ta base de données) quand tu supprimes une boîte !</p>
+                <p><strong>La solution :</strong> Utiliser des <strong>volumes</strong> ! C'est comme avoir un tiroir
+                    séparé où tu mets tes choses importantes. Même si tu jettes la boîte, le tiroir reste !</p>
+            </article>
+
+            <h4>Volumes Docker (✅ Le Tiroir Recommandé)</h4>
+            <p><strong>C'est comme un tiroir spécial géré par Docker :</strong></p>
+            <ul>
+                <li>Docker s'occupe de tout (tu n'as pas à te soucier où c'est stocké)</li>
+                <li>Les données sont dans un endroit spécial sur ton ordinateur</li>
+                <li>✅ <strong>Portable</strong> : Tu peux déplacer le tiroir facilement</li>
+                <li>✅ <strong>Rapide</strong> : Ça va vite</li>
+                <li>✅ <strong>Facile à sauvegarder</strong> : Tu peux copier le tiroir facilement</li>
+            </ul>
+            <pre class="code-example"><code class="bash">
+# Créer un tiroir (volume)
+docker volume create mon-tiroir-donnees
+
+# Utiliser le tiroir dans une boîte
+docker run -d -v mon-tiroir-donnees:/var/lib/mysql mysql:8.0
+# Maintenant, même si tu supprimes la boîte, les données restent dans le tiroir !
+                    </code></pre>
+
+            <h4>Bind Mounts (✅ Pour le Développement)</h4>
+            <p><strong>C'est comme mettre un dossier de ton ordinateur directement dans la boîte :</strong></p>
+            <ul>
+                <li>Tu mets un dossier de ton ordinateur directement dans la boîte</li>
+                <li>Quand tu changes quelque chose dans le dossier, ça change aussi dans la boîte (et vice versa)</li>
+                <li>Utile pour <strong>synchroniser ton code</strong> : tu changes ton code, et ça change
+                    automatiquement dans la boîte !</li>
+            </ul>
+            <pre class="code-example"><code class="bash">
+# Mettre ton dossier "app" dans la boîte
+docker run -d -v $(pwd)/app:/app monapp:latest
+
+# Maintenant, quand tu changes un fichier dans ton dossier "app",
+# ça change aussi dans la boîte automatiquement !
+                </code></pre>
+
+            <p><strong>En résumé :</strong></p>
+            <ul>
+                <li>📦 <strong>Volume Docker</strong> = Un tiroir spécial géré par Docker (pour les données importantes)
+                </li>
+                <li>📁 <strong>Bind Mount</strong> = Un dossier de ton ordinateur mis dans la boîte (pour synchroniser
+                    le code)</li>
+            </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>6.2 - Gérer tes Tiroirs (Volumes)</h3>
+                <p><strong>Voici comment gérer tes tiroirs :</strong></p>
+                <pre class="code-example"><code class="bash">
+# Créer un nouveau tiroir
+docker volume create mon-tiroir
+
+# Voir tous tes tiroirs
+docker volume ls
+
+# Voir les détails d'un tiroir (où il est, combien il est grand, etc.)
+docker volume inspect mon-tiroir
+
+# Jeter un tiroir (attention, tu perds les données dedans !)
+docker volume rm mon-tiroir
+
+# Jeter tous les tiroirs vides (ceux qui ne sont plus utilisés)
+docker volume prune
+                    </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>6.3 - Volumes dans Docker Compose</h3>
+                <pre class="code-example"><code class="yaml">
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - db-data:/var/lib/mysql  # Volume nommé
+      - ./backup:/backup         # Bind mount
+volumes:
+  db-data:  # Volume géré par Docker
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>6.4 - Les Meilleures Façons de Faire</h3>
+                <ul>
+                    <li>✅ <strong>Pour la production (quand c'est pour de vrai) :</strong> Utilise des tiroirs spéciaux
+                        (volumes nommés) pour garder tes données importantes</li>
+                    <li>✅ <strong>Pour le développement (quand tu travailles) :</strong> Utilise des dossiers de ton
+                        ordinateur (bind mounts) pour que tes changements se voient tout de suite</li>
+                    <li>✅ <strong>Sauvegarde :</strong> N'oublie pas de faire des copies de tes tiroirs importants
+                        régulièrement !</li>
+                    <li>✅ <strong>Sécurité :</strong> Ne mets jamais des dossiers sensibles (comme les fichiers système)
+                        dans tes boîtes</li>
+                </ul>
+            </article>
+        </section>
+
+        <section id="compose-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 7 : Docker Compose</h2>
+
+            <article class="sub-section">
+                <h3>7.1 - Pourquoi Docker Compose ?</h3>
+                <p><strong>Imagine que tu veux créer un jeu vidéo qui a besoin de plusieurs choses :</strong></p>
+                <ul>
+                    <li>🎮 Le jeu lui-même (une boîte)</li>
+                    <li>💾 Une base de données pour sauvegarder (une autre boîte)</li>
+                    <li>📦 Un système de cache (encore une autre boîte)</li>
+                </ul>
+                <p><strong>Sans Docker Compose :</strong> Tu devrais créer chaque boîte une par une avec des commandes
+                    compliquées. C'est long et compliqué !</p>
+                <p><strong>Avec Docker Compose :</strong> Tu écris tout dans un seul fichier (comme une liste de
+                    courses), et avec une seule commande, toutes les boîtes se créent et se connectent automatiquement !
+                </p>
+                <p><strong>En résumé :</strong> Docker Compose, c'est comme avoir une recette qui dit "prends ces 3
+                    boîtes, mets-les ensemble, et connecte-les". Au lieu de le faire manuellement, tu dis juste "suis la
+                    recette" et tout se fait tout seul !</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>7.2 - Le Fichier docker-compose.yml : Ta Recette</h3>
+                <p>Le fichier <code>docker-compose.yml</code>, c'est comme une <strong>recette de cuisine</strong> ! Tu
+                    écris dedans toutes les boîtes dont tu as besoin, comment les connecter, et où mettre les données.
+                </p>
+                <pre class="code-example"><code class="yaml">
+version: '3.8' # La version de la recette
+
+services:  # Les boîtes dont tu as besoin
+  app:     # La première boîte : ton application
+    build: .  # Construis-la depuis le Dockerfile
+    ports:
+      - "8000:8000"  # Ouvre la porte 8000
+    volumes:
+      - ./app:/app  # Synchronise ton dossier "app"
+    depends_on:
+      - mysql  # Cette boîte a besoin de "mysql" pour fonctionner
+
+  mysql:   # La deuxième boîte : la base de données
+    image: mysql:8.0  # Utilise l'image MySQL toute faite
+    volumes:
+      - db-data:/var/lib/mysql  # Sauvegarde les données dans un tiroir
+    environment:
+      MYSQL_ROOT_PASSWORD: secret  # Le mot de passe
+
+volumes:   # Les tiroirs dont tu as besoin
+  db-data:  # Un tiroir appelé "db-data"
+                </code></pre>
+                <p><strong>En langage simple :</strong></p>
+                <ul>
+                    <li><strong>services</strong> = La liste de tes boîtes</li>
+                    <li><strong>volumes</strong> = La liste de tes tiroirs</li>
+                    <li><strong>ports</strong> = Les portes pour accéder aux boîtes</li>
+                    <li><strong>depends_on</strong> = Cette boîte a besoin de cette autre boîte</li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>7.3 - Exemples de Stacks Complètes</h3>
+
+                <h4>Stack Laravel avec Sail (Recommandé)</h4>
+                <p><strong>💡 Note :</strong> Laravel Sail génère automatiquement un <code>docker-compose.yml</code>
+                    optimisé. Utilisez <code>php artisan sail:install</code> pour le générer.</p>
+                <pre class="code-example"><code class="yaml">
+# docker-compose.yml généré par Laravel Sail
+version: '3.8'
+
+services: 
+  laravel.test:
+    build:
+      context: ./vendor/laravel/sail/runtimes/8.2
+      dockerfile: Dockerfile
+    ports:
+      - '${APP_PORT:-80}:80'
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    depends_on:
+      - mysql
+
+  mysql:
+    image: 'mysql:8.0'
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+    volumes:
+      - 'sailmysql:/var/lib/mysql'
+    networks:
+      - sail
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sailmysql:
+                </code></pre>
+                <p><strong>Commandes Sail :</strong></p>
+                <pre class="code-example"><code class="bash">
+# Démarrer l'environnement
+./vendor/bin/sail up -d
+
+# Exécuter des commandes Artisan
+./vendor/bin/sail artisan migrate
+
+# Accéder au shell
+./vendor/bin/sail shell
+                </code></pre>
+
+                <h4>Stack Node.js + MongoDB</h4>
+                <pre class="code-example"><code class="yaml">
+version: '3.8'
+services:
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/myapp
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>7.4 - Commandes Docker Compose Essentielles</h3>
+                <pre class="code-example"><code class="bash">
+# Démarrer tous les services en mode detached
+docker-compose up -d
+
+# Démarrer et reconstruire les images
+docker-compose up -d --build
+
+# Voir les logs en temps réel
+docker-compose logs -f
+
+# Logs d'un service spécifique
+docker-compose logs -f app
+
+# Exécuter une commande dans un service
+docker-compose exec app php artisan migrate
+
+# Arrêter les services (sans supprimer)
+docker-compose stop
+
+# Arrêter et supprimer conteneurs, réseaux
+docker-compose down
+
+# Arrêter et supprimer TOUT (volumes inclus)
+docker-compose down -v 
+
+# Voir les services en cours
+docker-compose ps
+
+# Redémarrer un service
+docker-compose restart app
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>7.5 - Variables d'Environnement</h3>
+                <p>Utilisez un fichier <code>.env</code> pour externaliser la configuration :</p>
+                <pre class="code-example"><code>
+# .env
+MYSQL_ROOT_PASSWORD=secret123
+MYSQL_DATABASE=myapp
+APP_PORT=8000
+                </code></pre>
+                <pre class="code-example"><code class="yaml">
+# docker-compose.yml
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+                </code></pre>
+                <p><strong>💡 Astuce :</strong> Ne commitez jamais le fichier <code>.env</code> avec des secrets en
+                    production !</p>
+            </article>
+        </section>
+
+        <section id="registry-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 8 : Docker Registry</h2>
+
+            <article class="sub-section">
+                <h3>8.1 - Docker Hub</h3>
+                <p><strong>Docker Hub</strong> est le registry public officiel de Docker. C'est l'équivalent de GitHub
+                    pour les images Docker.</p>
+                <ul>
+                    <li>📦 <strong>Images publiques :</strong> Des millions d'images disponibles (nginx, mysql, node,
+                        etc.)</li>
+                    <li>🔒 <strong>Images privées :</strong> Stockez vos images privées (plan payant)</li>
+                    <li>🚀 <strong>Automated Builds :</strong> Build automatique depuis GitHub/GitLab</li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>8.2 - Pousser et Tirer des Images</h3>
+                <h4>Se connecter à Docker Hub</h4>
+                <pre class="code-example"><code class="bash">
+# Se connecter
+docker login
+
+# Se connecter avec username
+docker login -u monusername
+
+# Se déconnecter
+docker logout
+                </code></pre>
+
+                <h4>Tag et Push d'une Image</h4>
+                <pre class="code-example"><code class="bash">
+# 1. Construire l'image
+docker build -t monapp:1.0 .
+
+# 2. Tagger pour Docker Hub (format: username/repo:tag)
+docker tag monapp:1.0 monusername/monapp:1.0
+
+# 3. Pousser vers Docker Hub
+docker push monusername/monapp:1.0
+
+# Maintenant, n'importe qui peut faire :
+docker pull monusername/monapp:1.0
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>8.3 - Gestion des Versions (Tags)</h3>
+                <p>Les tags permettent de versionner vos images :</p>
+                <pre class="code-example"><code class="bash">
+# Tag de version spécifique
+docker tag monapp:1.0 monusername/monapp:1.0.0
+
+# Tag latest (dernière version)
+docker tag monapp:1.0 monusername/monapp:latest
+
+# Tag avec SHA du commit
+docker tag monapp:1.0 monusername/monapp:abc123
+
+# Pousser plusieurs tags
+docker push monusername/monapp:1.0.0
+docker push monusername/monapp:latest
+                </code></pre>
+                <p><strong>💡 Astuce :</strong> En production, évitez le tag <code>latest</code> et utilisez des
+                    versions sémantiques (<code>1.2.3</code>).</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>8.4 - Registries Privés</h3>
+                <p>Pour des raisons de sécurité ou de conformité, vous pouvez héberger votre propre registry :</p>
+
+                <h4>Docker Registry (Open Source)</h4>
+                <pre class="code-example"><code class="bash">
+# Lancer un registry local
+docker run -d -p 5000:5000 --name registry registry:2
+
+# Tagger et pousser vers le registry local
+docker tag monapp:1.0 localhost:5000/monapp:1.0
+docker push localhost:5000/monapp:1.0
+
+# Tirer depuis le registry local
+docker pull localhost:5000/monapp:1.0
+                </code></pre>
+
+                <h4>Alternatives Cloud</h4>
+                <ul>
+                    <li><strong>GitHub Container Registry (ghcr.io)</strong> : Gratuit pour les projets open source</li>
+                    <li><strong>Amazon ECR</strong> : Intégré avec AWS</li>
+                    <li><strong>Google Container Registry</strong> : Intégré avec GCP</li>
+                    <li><strong>Azure Container Registry</strong> : Intégré avec Azure</li>
+                </ul>
+            </article>
+        </section>
+
+        <section id="securite-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 9 : Sécurité Docker</h2>
+
+            <article class="sub-section">
+                <h3>9.1 - Bonnes Pratiques de Sécurité</h3>
+                <div class="advantages">
+                    <p><strong>1. Ne pas exécuter en root :</strong> Créez un utilisateur non-privilégié dans votre
+                        Dockerfile</p>
+                    <p><strong>2. Utiliser des images officielles :</strong> Préférez les images vérifiées de Docker Hub
+                    </p>
+                    <p><strong>3. Scanner les images :</strong> Utilisez <code>docker scan</code> ou Trivy pour détecter
+                        les vulnérabilités</p>
+                    <p><strong>4. Limiter les ressources :</strong> Utilisez <code>--memory</code>, <code>--cpus</code>
+                        pour limiter la consommation</p>
+                    <p><strong>5. Ne pas exposer tous les ports :</strong> Exposez uniquement ce qui est nécessaire</p>
+                    <p><strong>6. Utiliser des secrets :</strong> Ne jamais hardcoder les mots de passe dans les
+                        Dockerfiles</p>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>9.2 - Exemple : Dockerfile Sécurisé</h3>
+                <pre class="code-example"><code class="dockerfile">
+FROM node:18-alpine
+
+# Créer un utilisateur non-root
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers de dépendances d'abord (cache)
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copier le code
+COPY --chown=nodejs:nodejs . .
+
+# Passer à l'utilisateur non-root
+USER nodejs
+
+# Exposer le port
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["node", "server.js"]
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>9.3 - Docker Scan / Trivy</h3>
+                <h4>Docker Scan (Intégré)</h4>
+                <pre class="code-example"><code class="bash">
+# Scanner une image
+docker scan monapp:1.0
+
+# Scanner avec rapport détaillé
+docker scan --json monapp:1.0 > scan-report.json
+                </code></pre>
+
+                <h4>Trivy (Recommandé)</h4>
+                <pre class="code-example"><code class="bash">
+# Installer Trivy
+brew install trivy  # macOS
+# ou
+sudo apt-get install trivy  # Linux
+
+# Scanner une image
+trivy image monapp:1.0
+
+# Scanner avec format JSON
+trivy image -f json -o report.json monapp:1.0
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>9.4 - Limiter les Permissions</h3>
+                <pre class="code-example"><code class="bash">
+# Limiter la mémoire
+docker run -d --memory="512m" --name app monapp:1.0
+
+# Limiter les CPUs
+docker run -d --cpus="1.5" --name app monapp:1.0
+
+# Mode read-only (système de fichiers en lecture seule)
+docker run -d --read-only --tmpfs /tmp --name app monapp:1.0
+
+# Désactiver les capacités privilégiées
+docker run -d --cap-drop=ALL --cap-add=NET_BIND_SERVICE --name app monapp:1.0
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>9.5 - User Namespaces</h3>
+                <p>Les user namespaces permettent de mapper les UID/GID du conteneur vers des UID/GID non-privilégiés
+                    sur l'hôte.</p>
+                <p><strong>💡 Astuce :</strong> Activez les user namespaces dans la configuration Docker pour une
+                    sécurité renforcée, surtout en production.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>9.6 - Secrets Management</h3>
+                <h4>Avec Docker Compose</h4>
+                <pre class="code-example"><code class="yaml">
+version: '3.8'
+services:
+  app:
+    image: monapp:1.0
+    secrets:
+      - db_password
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/db_password
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+                </code></pre>
+                <p><strong>💡 Astuce :</strong> Utilisez des outils comme HashiCorp Vault ou AWS Secrets Manager en
+                    production.</p>
+            </article>
+        </section>
+
+        <section id="optimisation-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 10 : Optimisation & Bonnes Pratiques</h2>
+
+            <article class="sub-section">
+                <h3>10.1 - Optimisation de Dockerfile</h3>
+                <h4>❌ Mauvais Exemple</h4>
+                <pre class="code-example"><code class="dockerfile">
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get install -y git
+RUN apt-get install -y nodejs
+RUN apt-get install -y npm
+COPY . .
+RUN npm install
+CMD ["node", "app.js"]
+                </code></pre>
+
+                <h4>✅ Bon Exemple</h4>
+                <pre class="code-example"><code class="dockerfile">
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+USER node
+CMD ["node", "app.js"]
+                </code></pre>
+                <p><strong>Améliorations :</strong> Image Alpine (plus petite), layers combinés, cache optimisé,
+                    utilisateur non-root.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>10.2 - Images Slim et Alpine</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Taille</th>
+                            <th>Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>node:18</code></td>
+                            <td>~900 MB</td>
+                            <td>Développement</td>
+                        </tr>
+                        <tr>
+                            <td><code>node:18-slim</code></td>
+                            <td>~200 MB</td>
+                            <td>Production (recommandé)</td>
+                        </tr>
+                        <tr>
+                            <td><code>node:18-alpine</code></td>
+                            <td>~120 MB</td>
+                            <td>Production (ultra-optimisé)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><strong>💡 Astuce :</strong> Alpine utilise musl libc au lieu de glibc. Testez bien votre application
+                    car certaines dépendances peuvent ne pas fonctionner.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>10.3 - Multi-stage Builds</h3>
+                <p>Les multi-stage builds permettent de réduire drastiquement la taille de l'image finale en ne gardant
+                    que le nécessaire.</p>
+                <pre class="code-example"><code class="dockerfile">
+# Stage 1 : Build
+FROM node:18 AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2 : Production
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY package*.json ./
+CMD ["node", "dist/server.js"]
+                </code></pre>
+                <p><strong>Résultat :</strong> L'image finale ne contient pas les outils de build (webpack, typescript,
+                    etc.), seulement le runtime.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>10.4 - Réduction de la Taille des Images</h3>
+                <ul>
+                    <li>✅ <strong>Nettoyer les caches :</strong>
+                        <code>RUN apt-get clean && rm -rf /var/lib/apt/lists/*</code>
+                    </li>
+                    <li>✅ <strong>Supprimer les fichiers temporaires :</strong> Dans la même couche RUN</li>
+                    <li>✅ <strong>Utiliser .dockerignore :</strong> Exclure node_modules, .git, etc.</li>
+                    <li>✅ <strong>Multi-stage builds :</strong> Séparer build et runtime</li>
+                    <li>✅ <strong>Images distroless :</strong> Pour les applications compilées (Go, Java)</li>
+                </ul>
+
+                <h4>Exemple : Image Distroless (Google)</h4>
+                <pre class="code-example"><code class="dockerfile">
+FROM golang:1.21 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o app .
+
+FROM gcr.io/distroless/base-debian11
+COPY --from=builder /app/app /app
+CMD ["/app"]
+                </code></pre>
+                <p><strong>Taille :</strong> ~20 MB (vs ~800 MB avec une image complète)</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>10.5 - Cache Layers</h3>
+                <p>Docker cache les layers pour accélérer les builds. Organisez votre Dockerfile pour maximiser le cache
+                    :</p>
+                <pre class="code-example"><code class="dockerfile">
+# ✅ BON : Dépendances d'abord (changent rarement)
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./          # Layer 1 : Cache si package.json ne change pas
+RUN npm install                # Layer 2 : Cache si Layer 1 est en cache
+COPY . .                       # Layer 3 : Change souvent
+CMD ["node", "app.js"]
+
+# ❌ MAUVAIS : Code d'abord (change souvent)
+FROM node:18-alpine
+WORKDIR /app
+COPY . .                       # Layer 1 : Change souvent → invalide tout
+RUN npm install                # Layer 2 : Rebuild à chaque fois
+CMD ["node", "app.js"]
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>10.6 - Commandes d'Optimisation</h3>
+                <pre class="code-example"><code class="bash">
+# Voir la taille des images
+docker images
+
+# Analyser la taille d'une image
+docker history monapp:1.0
+
+# Nettoyer les images non utilisées
+docker image prune
+
+# Nettoyer TOUT (images, conteneurs, volumes, réseaux)
+docker system prune -a --volumes
+
+# Build avec --no-cache (forcer rebuild complet)
+docker build --no-cache -t monapp:1.0 .
+                </code></pre>
+            </article>
+        </section>
+
+        <section id="production-docker" class="chapter-section">
+            <h2 class="chapter-title">SECTION 11 : Docker en Production</h2>
+
+            <article class="sub-section">
+                <h3>11.1 - Limites de Docker Seul</h3>
+                <p>Docker seul est excellent pour le développement et les petits déploiements, mais a des limites en
+                    production :</p>
+                <ul>
+                    <li>❌ <strong>Pas de haute disponibilité :</strong> Si un conteneur crash, il ne redémarre pas
+                        automatiquement</li>
+                    <li>❌ <strong>Pas de scaling automatique :</strong> Vous devez gérer manuellement le nombre
+                        d'instances</li>
+                    <li>❌ <strong>Pas de load balancing :</strong> Pas de distribution automatique du trafic</li>
+                    <li>❌ <strong>Pas de gestion multi-hôte :</strong> Difficile de gérer plusieurs serveurs</li>
+                    <li>❌ <strong>Pas de rolling updates :</strong> Pas de déploiement sans interruption</li>
+                </ul>
+                <p><strong>Solution :</strong> Utiliser un orchestrateur comme Docker Swarm ou Kubernetes.</p>
+            </article>
+
+            <article class="sub-section">
+                <h3>11.2 - Docker Swarm (Introduction)</h3>
+                <p><strong>Docker Swarm</strong> est l'orchestrateur natif de Docker. Plus simple que Kubernetes, idéal
+                    pour commencer.</p>
+
+                <h4>Concepts Clés</h4>
+                <ul>
+                    <li><strong>Swarm :</strong> Cluster de machines Docker</li>
+                    <li><strong>Node :</strong> Machine dans le swarm (Manager ou Worker)</li>
+                    <li><strong>Service :</strong> Définition d'un conteneur à exécuter (avec réplicas)</li>
+                    <li><strong>Stack :</strong> Ensemble de services (équivalent docker-compose pour Swarm)</li>
+                </ul>
+
+                <h4>Commandes de Base</h4>
+                <pre class="code-example"><code class="bash">
+# Initialiser un swarm
+docker swarm init
+
+# Rejoindre un swarm (en tant que worker)
+docker swarm join --token SWMTKN-... manager-ip:2377
+
+# Créer un service avec 3 réplicas
+docker service create --replicas 3 --name web nginx:latest
+
+# Lister les services
+docker service ls
+
+# Mettre à jour un service
+docker service update --image nginx:1.21 web
+
+# Supprimer un service
+docker service rm web
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>11.3 - Kubernetes (Introduction)</h3>
+                <p><strong>Kubernetes (K8s)</strong> est la plateforme d'orchestration la plus populaire. Plus complexe
+                    mais plus puissant que Swarm.</p>
+
+                <h4>Concepts Clés</h4>
+                <ul>
+                    <li><strong>Pod :</strong> Plus petite unité déployable (1+ conteneurs)</li>
+                    <li><strong>Deployment :</strong> Définit les réplicas et la stratégie de déploiement</li>
+                    <li><strong>Service :</strong> Point d'entrée réseau stable pour les pods</li>
+                    <li><strong>Namespace :</strong> Isolation logique (environnements dev/staging/prod)</li>
+                </ul>
+
+                <h4>Exemple : Déploiement Simple</h4>
+                <pre class="code-example"><code class="yaml">
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: app
+        image: monapp:1.0
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer
+                </code></pre>
+                <pre class="code-example"><code class="bash">
+# Appliquer le déploiement
+kubectl apply -f deployment.yaml
+
+# Voir les pods
+kubectl get pods
+
+# Mettre à jour l'image
+kubectl set image deployment/my-app app=monapp:2.0
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>11.4 - CI/CD avec Docker</h3>
+                <p>Docker est essentiel dans les pipelines CI/CD modernes. Voici un exemple avec GitHub Actions :</p>
+
+                <h4>Exemple : GitHub Actions</h4>
+                <pre class="code-example"><code class="yaml">
+# .github/workflows/docker.yml
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: monusername/monapp:${{ github.sha }}
+                </code></pre>
+
+                <h4>Autres Outils CI/CD</h4>
+                <ul>
+                    <li><strong>GitLab CI/CD :</strong> Intégré avec GitLab</li>
+                    <li><strong>Jenkins :</strong> Serveur CI/CD open source</li>
+                    <li><strong>CircleCI :</strong> CI/CD cloud</li>
+                    <li><strong>Travis CI :</strong> CI/CD cloud</li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>11.5 - Monitoring et Logging</h3>
+                <h4>Outils de Monitoring</h4>
+                <ul>
+                    <li><strong>Docker Stats :</strong> <code>docker stats</code> (basique)</li>
+                    <li><strong>cAdvisor :</strong> Monitoring des conteneurs par Google</li>
+                    <li><strong>Prometheus + Grafana :</strong> Monitoring avancé</li>
+                    <li><strong>Datadog / New Relic :</strong> Solutions cloud</li>
+                </ul>
+
+                <h4>Gestion des Logs</h4>
+                <ul>
+                    <li><strong>Docker Logs :</strong> <code>docker logs</code> (basique)</li>
+                    <li><strong>ELK Stack :</strong> Elasticsearch, Logstash, Kibana</li>
+                    <li><strong>Loki :</strong> Solution légère par Grafana</li>
+                    <li><strong>Fluentd :</strong> Collecteur de logs</li>
+                </ul>
+            </article>
+        </section>
+
+        <section id="demo-pratique" class="chapter-section">
+            <h2 class="chapter-title">SECTION 12 : Démo Pratique avec Laravel Sail</h2>
+
+            <article class="sub-section">
+                <h3>✅ CAS PRATIQUE COMPLET : De A à Z avec Docker</h3>
+
+                <div class="solution-box"
+                    style="margin: 25px 0; padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left: 5px solid #4caf50; border-radius: 8px;">
+                    <h4 style="margin-top: 0; color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+                        📄 <span>Télécharger le Guide Pratique Complet</span>
+                    </h4>
+                    <p style="margin-bottom: 15px; color: #1b5e20;">
+                        <strong>Guide PDF détaillé :</strong> Télécharge le document complet avec toutes les étapes,
+                        commandes et explications pour mettre en place un projet Laravel avec Docker.
+                    </p>
+                    <a href="Guide_Laravel_Sail_Docker.pdf" target="_blank" rel="noopener noreferrer"
+                        style="display: inline-block; padding: 12px 24px; background: #4caf50; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                        onmouseover="this.style.background='#45a049'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)';"
+                        onmouseout="this.style.background='#4caf50'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)';">
+                        📥 Ouvrir le PDF dans un nouvel onglet
+                    </a>
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #388e3c;">
+                        <em>Le PDF contient toutes les étapes détaillées avec des espaces optimisés pour une lecture
+                            facile.</em>
+                    </p>
+                </div>
+
+                <p><strong>Suivons étape par étape comment deux développeurs travaillent ensemble avec Docker :</strong>
+                </p>
+
+                <h4>👨‍💻 PARTIE 1 : DÉVELOPPEUR A - Création et Configuration</h4>
+
+                <h4>📋 ÉTAPE 1 : Créer le Projet Laravel avec Sail</h4>
+                <p><strong>Développeur A</strong> ouvre son terminal et tape :</p>
+                <pre class="code-example"><code class="bash">
+# Créer un nouveau projet Laravel avec Docker Sail
+curl -s "https://laravel.build/blog-app" | bash
+
+# Cette commande fait automatiquement :
+# ✅ Télécharge Laravel
+# ✅ Installe Sail
+# ✅ Configure Docker
+# ⏱️ Temps : 2-3 minutes
+                </code></pre>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop"
+                        alt="Terminal montrant la création du projet Laravel"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Terminal : La
+                            commande Laravel Build crée automatiquement le projet avec Docker Sail</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 2 : Vérifier que Docker Fonctionne</h4>
+                <pre class="code-example"><code class="bash">
+# Aller dans le dossier du projet
+cd blog-app
+
+# Vérifier que Docker est installé
+docker --version
+# Devrait afficher : Docker version 24.0.0, build ...
+
+# Vérifier que Docker fonctionne
+docker ps
+# Devrait afficher une liste (vide ou avec des conteneurs)
+                </code></pre>
+
+                <h4>📋 ÉTAPE 3 : Démarrer l'Environnement Docker</h4>
+                <pre class="code-example"><code class="bash">
+# Démarrer tous les conteneurs (Laravel, MySQL)
+./vendor/bin/sail up -d
+
+# Cette commande :
+# ✅ Télécharge les images nécessaires (si pas déjà fait)
+# ✅ Crée les conteneurs
+# ✅ Configure les réseaux
+# ✅ Démarre tout
+# ⏱️ Temps : 1-2 minutes (première fois)
+                </code></pre>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ CE QUI SE PASSE QUAND TU LANCES "sail up -d"            │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│ 1. Docker télécharge les images (si nécessaire)          │
+│    📥 Télécharge php:8.2                                 │
+│    📥 Télécharge mysql:8.0                               │
+│                                                           │
+│ 2. Docker crée les conteneurs                            │
+│    🎁 Crée le conteneur Laravel                          │
+│    🎁 Crée le conteneur MySQL                            │
+│                                                           │
+│ 3. Docker connecte tout ensemble                          │
+│    🔗 Connecte Laravel → MySQL                           │
+│                                                           │
+│ 4. Tout démarre !                                        │
+│    ✅ Laravel fonctionne sur http://localhost            │
+│    ✅ MySQL écoute sur le port 3306                      │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>📋 ÉTAPE 4 : Configurer la Base de Données</h4>
+                <pre class="code-example"><code class="bash">
+# Créer les tables dans la base de données
+./vendor/bin/sail artisan migrate
+
+# (Optionnel) Remplir la base avec des données de test
+./vendor/bin/sail artisan db:seed
+
+# Vérifier que tout fonctionne
+# Ouvrir http://localhost dans le navigateur
+# Tu devrais voir la page d'accueil de Laravel ! 🎉
+                </code></pre>
+
+                <h4>📋 ÉTAPE 5 : Créer une Image Docker Personnalisée (Optionnel mais Recommandé)</h4>
+                <p><strong>Si tu veux que ton équipe ait exactement le même environnement, crée une image Docker
+                        :</strong></p>
+
+                <h4>5.1 - Créer un Dockerfile (si pas déjà créé par Sail)</h4>
+                <pre class="code-example"><code class="dockerfile">
+# Dockerfile (dans la racine du projet)
+FROM php:8.2-fpm
+
+# Installer les outils nécessaires
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
+
+# Installer les extensions PHP
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Définir le répertoire de travail
+WORKDIR /var/www/html
+
+# Copier le code
+COPY . .
+
+# Installer les dépendances
+RUN composer install
+
+# Exposer le port
+EXPOSE 8000
+
+# Commande par défaut
+CMD php artisan serve --host=0.0.0.0 --port=8000
+                </code></pre>
+
+                <h4>5.2 - Construire l'Image Docker</h4>
+                <pre class="code-example"><code class="bash">
+# Construire l'image (créer le moule)
+docker build -t blog-app:1.0 .
+
+# Vérifier que l'image est créée
+docker images
+# Tu devrais voir "blog-app" dans la liste
+                </code></pre>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=300&fit=crop"
+                        alt="Construction de l'image Docker"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Docker Build :
+                            Construction de l'image étape par étape, comme un puzzle qui se construit</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 6 : Mettre l'Image en Ligne sur Docker Hub</h4>
+                <p><strong>Maintenant, mettons l'image en ligne pour que l'équipe puisse la récupérer :</strong></p>
+
+                <h4>6.1 - Créer un Compte sur Docker Hub</h4>
+                <p>Si tu n'as pas encore de compte :</p>
+                <ol>
+                    <li>Va sur <a href="https://hub.docker.com" target="_blank">hub.docker.com</a></li>
+                    <li>Clique sur "Sign Up" (S'inscrire)</li>
+                    <li>Crée ton compte (c'est gratuit !)</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png"
+                        alt="Docker Hub Logo"
+                        style="max-width: 300px; max-height: 200px; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow); background: white; padding: 20px;">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Docker Hub : Le
+                            magasin en ligne où tu peux mettre et récupérer tes images Docker</em></p>
+                </div>
+
+                <h4>6.2 - Se Connecter à Docker Hub depuis le Terminal</h4>
+                <pre class="code-example"><code class="bash">
+# Se connecter à Docker Hub
+docker login
+
+# Docker va te demander :
+# Username: ton-nom-utilisateur
+# Password: ton-mot-de-passe
+# Email: ton-email
+
+# Si tout va bien, tu verras : "Login Succeeded" ✅
+                </code></pre>
+
+                <h4>6.3 - Tagger l'Image pour Docker Hub</h4>
+                <pre class="code-example"><code class="bash">
+# Donner un nom à l'image pour Docker Hub
+# Format : nom-utilisateur/nom-image:version
+docker tag blog-app:1.0 ton-username/blog-app:1.0
+
+# Tu peux aussi créer un tag "latest" (dernière version)
+docker tag blog-app:1.0 ton-username/blog-app:latest
+
+# Vérifier les tags
+docker images | grep blog-app
+# Tu devrais voir les deux versions
+                </code></pre>
+
+                <h4>6.4 - Pousser l'Image sur Docker Hub</h4>
+                <pre class="code-example"><code class="bash">
+# Pousser l'image vers Docker Hub
+docker push ton-username/blog-app:1.0
+docker push ton-username/blog-app:latest
+
+# Docker va envoyer l'image sur internet
+# ⏱️ Temps : 2-5 minutes (selon la taille de l'image)
+# ✅ Quand c'est fini, l'image est disponible pour tout le monde !
+                </code></pre>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ CE QUI SE PASSE QUAND TU PUSHES L'IMAGE                │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  TON ORDINATEUR                                          │
+│  ┌─────────────────────────────────────┐                │
+│  │ Image blog-app:1.0                   │                │
+│  │ (sur ton disque dur)                 │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ docker push                                   │
+│           ▼                                              │
+│  🌐 INTERNET                                             │
+│           │                                              │
+│           │ Upload (envoi)                                │
+│           ▼                                              │
+│  DOCKER HUB (Cloud)                                      │
+│  ┌─────────────────────────────────────┐                │
+│  │ ton-username/blog-app:1.0           │                │
+│  │ ✅ Disponible pour tout le monde !   │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  Maintenant, n'importe qui peut faire :                  │
+│  docker pull ton-username/blog-app:1.0                   │
+│  Et récupérer exactement la même image !                 │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=400&fit=crop"
+                        alt="Docker Push vers Docker Hub"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Docker Push :
+                            L'image est envoyée vers Docker Hub, comme un fichier que tu uploades sur internet</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 7 : Mettre à Jour le docker-compose.yml pour Utiliser l'Image</h4>
+                <p><strong>Modifie le fichier docker-compose.yml pour utiliser l'image en ligne :</strong></p>
+                <pre class="code-example"><code class="yaml">
+# docker-compose.yml
+version: '3.8'
+
+services:
+  laravel.test:
+    # Au lieu de "build: .", utilise l'image en ligne
+    image: ton-username/blog-app:1.0
+    ports:
+      - '${APP_PORT:-80}:8000'
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    depends_on:
+      - mysql
+
+  mysql:
+    image: 'mysql:8.0'
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+    volumes:
+      - 'sailmysql:/var/lib/mysql'
+    networks:
+      - sail
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sailmysql:
+                </code></pre>
+
+                <h4>📋 ÉTAPE 8 : Pousser le Code sur Git</h4>
+                <p><strong>Maintenant, poussons tout le code sur Git pour que l'équipe puisse le récupérer :</strong>
+                </p>
+
+                <h4>8.1 - Initialiser Git (si pas déjà fait)</h4>
+                <pre class="code-example"><code class="bash">
+# Initialiser Git dans le projet
+git init
+
+# Créer un fichier .gitignore (pour ne pas pousser les fichiers inutiles)
+# Laravel en crée un automatiquement, mais vérifie qu'il contient :
+# - .env
+# - vendor/
+# - node_modules/
+# - storage/
+                </code></pre>
+
+                <h4>8.2 - Créer un Repository sur GitHub/GitLab</h4>
+                <ol>
+                    <li>Va sur <a href="https://github.com" target="_blank">github.com</a> ou <a
+                            href="https://gitlab.com" target="_blank">gitlab.com</a></li>
+                    <li>Clique sur "New Repository" (Nouveau dépôt)</li>
+                    <li>Donne un nom (ex: "blog-app")</li>
+                    <li>Clique sur "Create repository"</li>
+                </ol>
+
+                <div class="image-container">
+                    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                        alt="GitHub Logo"
+                        style="max-width: 200px; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow); background: white; padding: 20px;">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 GitHub : L'endroit
+                            où tu stockes ton code et où ton équipe peut le récupérer</em></p>
+                </div>
+
+                <h4>8.3 - Pousser le Code sur Git</h4>
+                <pre class="code-example"><code class="bash">
+# Ajouter tous les fichiers
+git add .
+
+# Faire un commit (sauvegarder)
+git commit -m "Initial commit : Projet Laravel avec Docker Sail"
+
+# Lier le projet local au dépôt en ligne
+git remote add origin https://github.com/ton-username/blog-app.git
+
+# Pousser le code sur GitHub
+git push -u origin main
+
+# ✅ Maintenant, tout le code est sur GitHub !
+# ✅ Le docker-compose.yml est inclus
+# ✅ L'équipe peut le récupérer !
+                </code></pre>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ CE QUI EST POUSSÉ SUR GIT                               │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  📁 blog-app/                                            │
+│  ├── app/                    ✅ Code de l'application    │
+│  ├── config/                 ✅ Configurations           │
+│  ├── database/               ✅ Migrations               │
+│  ├── routes/                 ✅ Routes                  │
+│  ├── docker-compose.yml      ✅ Configuration Docker    │
+│  ├── Dockerfile              ✅ (si tu en as créé un)  │
+│  ├── .env.example            ✅ Exemple de config       │
+│  ├── composer.json           ✅ Dépendances PHP         │
+│  └── README.md               ✅ Instructions            │
+│                                                           │
+│  ❌ Ce qui N'EST PAS poussé (grâce à .gitignore) :     │
+│  ├── .env                   (contient les secrets)      │
+│  ├── vendor/                (téléchargé via composer)   │
+│  └── node_modules/          (téléchargé via npm)        │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop"
+                        alt="Git Push vers GitHub"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Git Push : Le code
+                            est envoyé vers GitHub, maintenant accessible à toute l'équipe</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 9 : Créer un README pour l'Équipe</h4>
+                <p><strong>Crée un fichier README.md pour expliquer à l'équipe comment démarrer :</strong></p>
+                <pre class="code-example"><code>
+# Blog App - Projet Laravel avec Docker
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+- Docker Desktop installé
+- Git installé
+
+### Installation
+
+1. Cloner le projet :
+```bash
+git clone https://github.com/ton-username/blog-app.git
+cd blog-app
+```
+
+2. Copier le fichier d'environnement :
+```bash
+cp .env.example .env
+```
+
+3. Démarrer l'environnement :
+```bash
+./vendor/bin/sail up -d
+```
+
+4. Installer les dépendances :
+```bash
+./vendor/bin/sail composer install
+```
+
+5. Configurer la base de données :
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+6. Accéder à l'application :
+Ouvrir http://localhost dans le navigateur
+
+## 📦 Image Docker
+
+L'image Docker est disponible sur Docker Hub :
+```bash
+docker pull ton-username/blog-app:1.0
+```
+
+## 👥 Équipe
+
+- Développeur A (Créateur)
+- Développeur B
+                </code></pre>
+
+                <h4>👩‍💻 PARTIE 2 : DÉVELOPPEUR B - Récupération et Travail</h4>
+
+                <h4>📋 ÉTAPE 10 : Développeur B Récupère le Projet</h4>
+                <p><strong>Développeur B</strong> veut maintenant travailler sur le projet. Voici ce qu'il fait :</p>
+
+                <h4>10.1 - Cloner le Projet depuis GitHub</h4>
+                <pre class="code-example"><code class="bash">
+# Cloner le projet (récupérer le code)
+git clone https://github.com/ton-username/blog-app.git
+
+# Aller dans le dossier
+cd blog-app
+
+# Voir ce qui est dans le projet
+ls -la
+# Tu devrais voir : app/, config/, docker-compose.yml, etc.
+                </code></pre>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop"
+                        alt="Git Clone"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Git Clone :
+                            Développeur B récupère tout le code du projet depuis GitHub</em></p>
+                </div>
+
+                <h4>10.2 - Copier le Fichier d'Environnement</h4>
+                <pre class="code-example"><code class="bash">
+# Copier le fichier d'exemple
+cp .env.example .env
+
+# Le fichier .env contient les paramètres (base de données, etc.)
+# Laravel Sail va utiliser ces paramètres automatiquement
+                </code></pre>
+
+                <h4>📋 ÉTAPE 11 : Développeur B Télécharge l'Image Docker</h4>
+                <p><strong>Développeur B peut maintenant télécharger l'image que Développeur A a mise en ligne
+                        :</strong></p>
+
+                <h4>Option A : Utiliser l'Image depuis Docker Hub</h4>
+                <pre class="code-example"><code class="bash">
+# Télécharger l'image depuis Docker Hub
+docker pull ton-username/blog-app:1.0
+
+# Docker va télécharger l'image
+# ⏱️ Temps : 1-3 minutes (selon la taille)
+# ✅ L'image est maintenant sur l'ordinateur de Développeur B !
+                </code></pre>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ CE QUI SE PASSE QUAND TU PULLS L'IMAGE                 │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  DOCKER HUB (Cloud)                                      │
+│  ┌─────────────────────────────────────┐                │
+│  │ ton-username/blog-app:1.0           │                │
+│  │ (Image créée par Développeur A)     │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ docker pull                                  │
+│           ▼                                              │
+│  🌐 INTERNET                                             │
+│           │                                              │
+│           │ Download (téléchargement)                    │
+│           ▼                                              │
+│  ORDINATEUR DÉVELOPPEUR B                                │
+│  ┌─────────────────────────────────────┐                │
+│  │ Image blog-app:1.0                  │                │
+│  │ ✅ Exactement la même que A !       │                │
+│  │ ✅ Même environnement !             │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  Maintenant, Développeur B peut utiliser cette image     │
+│  et avoir exactement le même environnement que A !      │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=400&fit=crop"
+                        alt="Docker Pull"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Docker Pull :
+                            Développeur B télécharge l'image exacte créée par Développeur A</em></p>
+                </div>
+
+                <h4>Option B : Utiliser Sail (Plus Simple)</h4>
+                <p><strong>Si le docker-compose.yml est bien configuré, Sail téléchargera automatiquement l'image
+                        !</strong></p>
+
+                <h4>📋 ÉTAPE 12 : Développeur B Démarre le Projet</h4>
+                <pre class="code-example"><code class="bash">
+# Démarrer tout l'environnement
+./vendor/bin/sail up -d
+
+# Cette commande va :
+# ✅ Télécharger l'image depuis Docker Hub (si pas déjà fait)
+# ✅ Créer les conteneurs
+# ✅ Configurer MySQL
+# ✅ Connecter tout ensemble
+# ⏱️ Temps : 2-3 minutes (première fois)
+                </code></pre>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=300&fit=crop"
+                        alt="Docker Compose Up"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Docker Compose Up
+                            : Tous les conteneurs (Laravel, MySQL) démarrent ensemble</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 13 : Développeur B Configure le Projet</h4>
+                <pre class="code-example"><code class="bash">
+# Installer les dépendances PHP
+./vendor/bin/sail composer install
+
+# Installer les dépendances JavaScript (si nécessaire)
+./vendor/bin/sail npm install
+
+# Créer les tables dans la base de données
+./vendor/bin/sail artisan migrate
+
+# (Optionnel) Remplir avec des données de test
+./vendor/bin/sail artisan db:seed
+
+# Vérifier que tout fonctionne
+./vendor/bin/sail ps
+# Tu devrais voir 3 conteneurs en cours d'exécution
+                </code></pre>
+
+                <h4>📋 ÉTAPE 14 : Développeur B Vérifie que Tout Fonctionne</h4>
+                <pre class="code-example"><code class="bash">
+# Voir les logs pour vérifier qu'il n'y a pas d'erreurs
+./vendor/bin/sail logs
+
+# Tester la connexion à MySQL
+./vendor/bin/sail mysql -e "SHOW DATABASES;"
+
+
+# Ouvrir http://localhost dans le navigateur
+# ✅ Tu devrais voir la page d'accueil de Laravel !
+                </code></pre>
+
+                <div class="image-container">
+                    <img src="https://laravel.com/img/logomark.min.svg" alt="Laravel Logo"
+                        style="max-width: 300px; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow); background: white; padding: 20px;">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 Laravel :
+                            L'application fonctionne parfaitement sur http://localhost !</em></p>
+                </div>
+
+                <h4>👥 PARTIE 3 : TRAVAIL EN ÉQUIPE avec Git</h4>
+
+                <h4>📋 ÉTAPE 15 : Développeur B Crée une Branche pour Travailler</h4>
+                <pre class="code-example"><code class="bash">
+# Créer une nouvelle branche pour travailler
+git checkout -b feature/ajout-blog
+
+# Maintenant, Développeur B peut travailler sans affecter le code principal
+                </code></pre>
+
+                <h4>📋 ÉTAPE 16 : Développeur B Fait des Modifications</h4>
+                <p><strong>Développeur B modifie le code, par exemple ajoute une fonctionnalité :</strong></p>
+                <pre class="code-example"><code class="bash">
+# Créer un nouveau controller
+./vendor/bin/sail artisan make:controller BlogController
+
+# Modifier des fichiers
+# ... travaille sur le code ...
+
+# Voir les changements
+git status
+git diff
+                </code></pre>
+
+                <h4>📋 ÉTAPE 17 : Développeur B Sauvegarde ses Modifications</h4>
+                <pre class="code-example"><code class="bash">
+# Ajouter les fichiers modifiés
+git add .
+
+# Sauvegarder (commit)
+git commit -m "Ajout de la fonctionnalité blog"
+
+# Pousser vers GitHub
+git push origin feature/ajout-blog
+
+# ✅ Les modifications sont maintenant sur GitHub !
+# ✅ Développeur A peut les voir et les réviser
+                </code></pre>
+
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ WORKFLOW DE COLLABORATION GIT                           │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  DÉVELOPPEUR B                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ 1. Travaille sur sa branche         │                │
+│  │    git checkout -b feature/blog     │                │
+│  │                                      │                │
+│  │ 2. Modifie le code                  │                │
+│  │    - Crée BlogController            │                │
+│  │    - Ajoute des routes              │                │
+│  │    - Modifie les vues               │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 3. Sauvegarde et pousse                     │
+│           │    git add .                                │
+│           │    git commit -m "..."                      │
+│           │    git push                                 │
+│           ▼                                              │
+│  GITHUB                                                  │
+│  ┌─────────────────────────────────────┐                │
+│  │ Branche feature/blog                │                │
+│  │ ✅ Modifications de B disponibles   │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ 4. Crée une Pull Request                    │
+│           ▼                                              │
+│  DÉVELOPPEUR A                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ 5. Vérifie les modifications        │                │
+│  │    - Regarde le code                │                │
+│  │    - Teste les changements           │                │
+│  │                                      │                │
+│  │ 6. Accepte et fusionne              │                │
+│  │    git merge feature/blog           │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  🎯 Résultat : Le code de B est maintenant dans main   │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=500&fit=crop"
+                        alt="GitHub Pull Request"
+                        style="max-width: 100%; border-radius: 8px; margin: 20px 0; box-shadow: var(--shadow);">
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9em;"><em>📸 GitHub Pull
+                            Request : Développeur B propose ses modifications, Développeur A peut les réviser</em></p>
+                </div>
+
+                <h4>📋 ÉTAPE 18 : Développeur A Récupère les Modifications</h4>
+                <p><strong>Quand Développeur B a fini, Développeur A peut récupérer les changements :</strong></p>
+                <pre class="code-example"><code class="bash">
+# Développeur A récupère les dernières modifications
+git pull origin main
+
+# Si de nouvelles dépendances ont été ajoutées
+./vendor/bin/sail composer install
+
+# Si la base de données a changé
+./vendor/bin/sail artisan migrate
+
+# Redémarrer les conteneurs si nécessaire
+./vendor/bin/sail restart
+
+# ✅ Développeur A a maintenant les dernières modifications !
+                </code></pre>
+
+                <h4>📋 ÉTAPE 19 : Cycle de Collaboration Continue</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ CYCLE DE COLLABORATION CONTINUE                         │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  JOUR 1                                                  │
+│  ┌─────────────────────────────────────┐                │
+│  │ Développeur A                        │                │
+│  │ - Crée le projet                     │                │
+│  │ - Met l'image en ligne               │                │
+│  │ - Pousse sur Git                     │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           ▼                                              │
+│  JOUR 2                                                  │
+│  ┌─────────────────────────────────────┐                │
+│  │ Développeur B                        │                │
+│  │ - Clone le projet                    │                │
+│  │ - Télécharge l'image                 │                │
+│  │ - Démarre en 5 minutes               │                │
+│  │ - Commence à travailler               │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           ▼                                              │
+│  JOUR 3-10                                               │
+│  ┌─────────────────────────────────────┐                │
+│  │ Les deux développeurs               │                │
+│  │ - Travaillent en parallèle           │                │
+│  │ - Poussent leurs modifications       │                │
+│  │ - Récupèrent les changements         │                │
+│  │ - Testent ensemble                   │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  🎯 Résultat :                                           │
+│     • Collaboration fluide                               │
+│     • Environnement identique pour tous                  │
+│     • Pas de problèmes de compatibilité                  │
+│     • Productivité maximale                              │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>📋 RÉCAPITULATIF COMPLET : Checklist</h4>
+                <div class="advantages">
+                    <p><strong>✅ DÉVELOPPEUR A a fait :</strong></p>
+                    <p>1. ✅ Créé le projet Laravel avec Sail</p>
+                    <p>2. ✅ Configuré Docker et testé que tout fonctionne</p>
+                    <p>3. ✅ Créé une image Docker personnalisée (optionnel)</p>
+                    <p>4. ✅ Mis l'image sur Docker Hub</p>
+                    <p>5. ✅ Poussé le code sur GitHub avec docker-compose.yml</p>
+                    <p>6. ✅ Créé un README avec les instructions</p>
+
+                    <p><strong>✅ DÉVELOPPEUR B a fait :</strong></p>
+                    <p>1. ✅ Cloné le projet depuis GitHub</p>
+                    <p>2. ✅ Téléchargé l'image depuis Docker Hub (ou Sail l'a fait automatiquement)</p>
+                    <p>3. ✅ Démarré l'environnement avec Sail</p>
+                    <p>4. ✅ Vérifié que tout fonctionne</p>
+                    <p>5. ✅ Commencé à travailler en 5-7 minutes !</p>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.1 - Qu'est-ce que Laravel Sail ?</h3>
+                <p><strong>Laravel Sail</strong> est l'environnement de développement Docker officiel de Laravel. Il
+                    fournit une interface en ligne de commande légère pour interagir avec l'environnement Docker par
+                    défaut de Laravel.</p>
+
+                <div class="advantages">
+                    <p><strong>✨ Avantages de Sail :</strong></p>
+                    <p>✅ <strong>Setup en 1 commande :</strong> Plus besoin d'installer PHP, MySQL, etc.
+                        localement</p>
+                    <p>✅ <strong>Environnement unifié :</strong> Tous les développeurs ont exactement le même
+                        environnement</p>
+                    <p>✅ <strong>Pré-configuré :</strong> MySQL, Mailpit (pour tester les emails) inclus</p>
+                    <p>✅ <strong>Commandes Laravel simplifiées :</strong> <code>./vendor/bin/sail artisan</code> au
+                        lieu
+                        de <code>php artisan</code></p>
+                    <p>✅ <strong>Hot-reload :</strong> Les modifications de code sont immédiatement visibles</p>
+                </div>
+
+                <h4>Architecture de Laravel Sail</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ LARAVEL SAIL - ENVIRONNEMENT DOCKER                      │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ Conteneur Laravel (laravel.test)    │                │
+│  │ ├─ PHP 8.2                           │                │
+│  │ ├─ Composer                           │                │
+│  │ ├─ Node.js & NPM                     │                │
+│  │ └─ Votre application Laravel         │                │
+│  │ Port: 80 → localhost:80              │                │
+│  └─────────────────────────────────────┘                │
+│           │                                              │
+│           │ Requêtes SQL                                 │
+│           ▼                                              │
+│  ┌─────────────────────────────────────┐                │
+│  │ Conteneur MySQL                      │                │
+│  │ ├─ MySQL 8.0                         │                │
+│  │ └─ Base de données                   │                │
+│  │ Port: 3306 → localhost:3306          │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  ┌─────────────────────────────────────┐                │
+│  │ Conteneur Mailpit (optionnel)       │                │
+│  │ └─ Test des emails (dev uniquement) │                │
+│  │ Port: 1025, 8025                     │                │
+│  └─────────────────────────────────────┘                │
+│                                                           │
+│  🎯 Tous ces conteneurs communiquent via Docker Network  │
+│  🎯 Réseau: "sail" (bridge network)                      │
+│  🎯 DNS interne: laravel.test, mysql                      │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+
+                <h4>Flux de Communication entre Conteneurs</h4>
+                <div class="code-block architecture">
+                    <pre>
+┌─────────────────────────────────────────────────────────┐
+│ FLUX DE DONNÉES DANS LARAVEL SAIL                        │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  👤 UTILISATEUR                                           │
+│     │                                                     │
+│     │ HTTP Request (http://localhost)                    │
+│     ▼                                                     │
+│  ┌──────────────────────┐                                │
+│  │ Laravel Application  │                                │
+│  │ (laravel.test:80)     │                                │
+│  └──────────────────────┘                                │
+│     │                                                     │
+│     ├─────────────────┬─────────────────┐               │
+│     │                 │                 │               │
+│     ▼                 ▼                 ▼               │
+│  ┌────────┐      ┌────────┐      ┌────────┐            │
+│  │ MySQL  │      │ Mailpit│                            │
+│  │ :3306  │      │ :1025  │                            │
+│  └────────┘      └────────┘                            │
+│     │                 │                                 │
+│     │ Données         │ Emails                         │
+│     │ persistantes    │ (dev)                          │
+│     │                 │                                 │
+│  ┌─────────────────────────────────────────┐            │
+│  │ VOLUMES DOCKER (Persistance)            │            │
+│  │ └─ sailmysql (données MySQL)            │            │
+│  └─────────────────────────────────────────┘            │
+└─────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.2 - Installation et Configuration</h3>
+
+                <h4>Étape 1 : Créer un Nouveau Projet Laravel avec Sail</h4>
+                <pre class="code-example"><code class="bash">
+# Option 1 : Créer un nouveau projet Laravel avec Sail
+curl -s "https://laravel.build/mon-app" | bash
+
+# Option 2 : Si vous avez déjà un projet Laravel
+composer require laravel/sail --dev
+php artisan sail:install
+                </code></pre>
+
+                <h4>Étape 2 : Structure du Projet</h4>
+                <p>Après l'installation, votre projet aura cette structure :</p>
+                <pre class="code-example"><code>
+mon-app/
+├── app/                    # Code de votre application
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+├── resources/
+├── routes/
+├── storage/
+├── tests/
+├── vendor/
+├── .env                    # Variables d'environnement
+├── docker-compose.yml      # Configuration Docker (généré par Sail)
+├── Dockerfile              # Dockerfile pour le conteneur Laravel
+└── composer.json
+                </code></pre>
+
+                <h4>Étape 3 : Fichier docker-compose.yml (Généré par Sail)</h4>
+                <p>Laravel Sail génère automatiquement un <code>docker-compose.yml</code> optimisé :</p>
+                <pre class="code-example"><code class="yaml">
+# docker-compose.yml (généré par Laravel Sail)
+version: '3.8'
+
+services:
+  laravel.test:
+    build:
+      context: ./vendor/laravel/sail/runtimes/8.2
+      dockerfile: Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: sail-8.2/app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT:-80}:80'
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - sail
+    depends_on:
+      - mysql
+
+  mysql:
+    image: 'mysql:8.0'
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - 'sailmysql:/var/lib/mysql'
+    networks:
+      - sail
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      retries: 3
+      timeout: 5s
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sailmysql:
+    driver: local
+                </code></pre>
+
+                <h4>Étape 4 : Configuration du Fichier .env</h4>
+                <p>Le fichier <code>.env</code> est automatiquement configuré pour Docker :</p>
+                <pre class="code-example"><code>
+APP_NAME=Laravel
+APP_ENV=local
+APP_KEY=base64:...
+APP_DEBUG=true
+APP_URL=http://localhost
+
+# Configuration de la base de données (pour Docker)
+DB_CONNECTION=mysql
+DB_HOST=mysql          # Nom du service Docker
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+# Cache (utilise le cache par défaut de Laravel)
+CACHE_DRIVER=file
+SESSION_DRIVER=file
+QUEUE_CONNECTION=sync
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.3 - Commandes Essentielles de Laravel Sail</h3>
+
+                <h4>Démarrer l'Environnement</h4>
+                <pre class="code-example"><code class="bash">
+# Démarrer tous les conteneurs
+./vendor/bin/sail up
+
+# Démarrer en arrière-plan (detached)
+./vendor/bin/sail up -d
+
+# Voir les logs en temps réel
+./vendor/bin/sail logs
+
+# Voir les logs d'un service spécifique
+./vendor/bin/sail logs mysql
+                </code></pre>
+
+                <h4>Commandes Artisan (Laravel)</h4>
+                <pre class="code-example"><code class="bash">
+# Exécuter des commandes Artisan
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan make:controller PostController
+./vendor/bin/sail artisan route:list
+./vendor/bin/sail artisan tinker
+
+# Créer un utilisateur admin
+./vendor/bin/sail artisan make:user
+                </code></pre>
+
+                <h4>Commandes Composer et NPM</h4>
+                <pre class="code-example"><code class="bash">
+# Installer des packages Composer
+./vendor/bin/sail composer require laravel/breeze
+
+# Installer des packages NPM
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
+./vendor/bin/sail npm run build
+                </code></pre>
+
+                <h4>Accéder aux Services</h4>
+                <pre class="code-example"><code class="bash">
+# Accéder au shell du conteneur Laravel
+./vendor/bin/sail shell
+
+# Accéder à MySQL
+./vendor/bin/sail mysql
+
+# Exécuter une commande PHP
+./vendor/bin/sail php --version
+
+# Exécuter des tests
+./vendor/bin/sail test
+                </code></pre>
+
+                <h4>Gestion des Conteneurs</h4>
+                <pre class="code-example"><code class="bash">
+# Arrêter les conteneurs
+./vendor/bin/sail down
+
+# Arrêter et supprimer les volumes (⚠️ supprime les données)
+./vendor/bin/sail down -v
+
+# Redémarrer les conteneurs
+./vendor/bin/sail restart
+
+# Reconstruire les conteneurs
+./vendor/bin/sail build
+
+# Voir les conteneurs en cours
+./vendor/bin/sail ps
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.4 - Démo Complète : Créer une Application Laravel</h3>
+
+                <h4>Étape 1 : Créer le Projet</h4>
+                <pre class="code-example"><code class="bash">
+# Créer un nouveau projet Laravel avec Sail
+curl -s "https://laravel.build/blog-app" | bash
+
+# Aller dans le dossier
+cd blog-app
+
+# Démarrer Sail
+./vendor/bin/sail up -d
+                </code></pre>
+
+                <h4>Étape 2 : Accéder à l'Application</h4>
+                <p>Ouvrez votre navigateur à <strong>http://localhost</strong> - Vous devriez voir la page d'accueil
+                    de
+                    Laravel !</p>
+
+                <h4>Étape 3 : Créer une Migration et un Modèle</h4>
+                <pre class="code-example"><code class="bash">
+# Créer un modèle Post avec migration
+./vendor/bin/sail artisan make:model Post -m
+
+# Éditer la migration (database/migrations/xxxx_create_posts_table.php)
+# Ajouter les colonnes : title, content, published_at
+
+# Exécuter la migration
+./vendor/bin/sail artisan migrate
+                </code></pre>
+
+                <h4>Étape 4 : Créer un Controller et des Routes</h4>
+                <pre class="code-example"><code class="bash">
+# Créer un controller
+./vendor/bin/sail artisan make:controller PostController
+
+# Ajouter des routes dans routes/web.php
+# Route::get('/posts', [PostController::class, 'index']);
+# Route::get('/posts/{id}', [PostController::class, 'show']);
+                </code></pre>
+
+                <h4>Étape 5 : Vérifier que Tout Fonctionne</h4>
+                <pre class="code-example"><code class="bash">
+# Vérifier les conteneurs
+./vendor/bin/sail ps
+
+# Vérifier les logs
+./vendor/bin/sail logs
+
+# Tester la connexion MySQL
+./vendor/bin/sail mysql -e "SHOW DATABASES;"
+
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.5 - Commandes Utiles pour le Développement</h3>
+
+                <h4>Développement Frontend</h4>
+                <pre class="code-example"><code class="bash">
+# Compiler les assets en mode développement (avec hot-reload)
+./vendor/bin/sail npm run dev
+
+# Compiler pour la production
+./vendor/bin/sail npm run build
+
+# Surveiller les changements (watch mode)
+./vendor/bin/sail npm run watch
+                </code></pre>
+
+                <h4>Base de Données</h4>
+                <pre class="code-example"><code class="bash">
+# Créer une migration
+./vendor/bin/sail artisan make:migration create_users_table
+
+# Exécuter les migrations
+./vendor/bin/sail artisan migrate
+
+# Rollback de la dernière migration
+./vendor/bin/sail artisan migrate:rollback
+
+# Réinitialiser complètement la base de données
+./vendor/bin/sail artisan migrate:fresh
+
+# Réinitialiser avec seeding
+./vendor/bin/sail artisan migrate:fresh --seed
+
+# Créer un seeder
+./vendor/bin/sail artisan make:seeder PostSeeder
+                </code></pre>
+
+                <h4>Debugging</h4>
+                <pre class="code-example"><code class="bash">
+# Accéder au shell du conteneur
+./vendor/bin/sail shell
+
+# Voir les logs en temps réel
+./vendor/bin/sail logs -f
+
+# Voir les logs d'un service spécifique
+./vendor/bin/sail logs -f laravel.test
+
+# Exécuter Tinker (REPL Laravel)
+./vendor/bin/sail artisan tinker
+                </code></pre>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.6 - Avantages de Laravel Sail vs Installation Manuelle</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Installation Manuelle</th>
+                            <th>Laravel Sail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Temps de setup</strong></td>
+                            <td>2-4 heures</td>
+                            <td><strong>5 minutes</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Configuration PHP</strong></td>
+                            <td>Manuelle, complexe</td>
+                            <td><strong>Automatique</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Base de données</strong></td>
+                            <td>Installation + configuration</td>
+                            <td><strong>Démarre avec Sail</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Environnement identique</strong></td>
+                            <td>Rarement</td>
+                            <td><strong>Toujours</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nettoyage</strong></td>
+                            <td>Désinstaller manuellement</td>
+                            <td><strong>docker-compose down</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Isolation</strong></td>
+                            <td>Conflits entre projets</td>
+                            <td><strong>Isolation complète</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <article class="sub-section">
+                <h3>12.7 - Astuces et Bonnes Pratiques</h3>
+
+                <div class="advantages">
+                    <p><strong>💡 Astuce 1 : Alias pour Sail</strong></p>
+                    <p>Créez un alias dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> :</p>
+                    <pre class="code-example"><code class="bash">
+# Ajouter cette ligne
+alias sail='./vendor/bin/sail'
+
+# Maintenant vous pouvez utiliser :
+sail up
+sail artisan migrate
+sail npm install
+                    </code></pre>
+
+                    <p><strong>💡 Astuce 2 : Variables d'Environnement</strong></p>
+                    <p>Utilisez le fichier <code>.env</code> pour configurer les ports et services :</p>
+                    <pre class="code-example"><code>
+APP_PORT=8080
+FORWARD_DB_PORT=3307
+                    </code></pre>
+
+                    <p><strong>💡 Astuce 3 : Persistance des Données</strong></p>
+                    <p>Les volumes Docker garantissent que vos données MySQL persistent même après
+                        <code>sail down</code>.
+                    </p>
+
+                    <p><strong>💡 Astuce 4 : Performance</strong></p>
+                    <p>Sur Mac/Windows, utilisez Docker Desktop avec les ressources allouées pour de meilleures
+                        performances.</p>
+                </div>
+            </article>
+        </section>
+
+        <section id="resume-qa" class="chapter-section">
+            <h2 class="chapter-title">RÉSUMÉ & QUESTIONS FRÉQUENTES</h2>
+
+            <article class="sub-section">
+                <h3>Résumé des Concepts Clés</h3>
+                <div class="advantages">
+                    <p><strong>🐳 Docker :</strong> Plateforme de conteneurisation qui isole les applications avec leurs
+                        dépendances</p>
+                    <p><strong>📦 Image :</strong> Template immuable et en lecture seule contenant l'application</p>
+                    <p><strong>🚀 Conteneur :</strong> Instance en cours d'exécution d'une image</p>
+                    <p><strong>📝 Dockerfile :</strong> Fichier de configuration pour construire une image</p>
+                    <p><strong>🔗 Docker Compose :</strong> Outil pour gérer des applications multi-conteneurs</p>
+                    <p><strong>🌐 Registry :</strong> Dépôt d'images (Docker Hub, registries privés)</p>
+                    <p><strong>💾 Volume :</strong> Stockage persistant pour les données</p>
+                    <p><strong>🌍 Réseau :</strong> Communication entre conteneurs (bridge, host, overlay)</p>
+                </div>
+            </article>
+
+            <article class="sub-section">
+                <h3>Questions Fréquentes (FAQ)</h3>
+
+                <h4>Q1 : Quelle est la différence entre CMD et ENTRYPOINT ?</h4>
+                <p><strong>R :</strong>
+                    <code>CMD</strong> définit la commande par défaut mais peut être surchargée. <code>ENTRYPOINT</code>
+                    est fixe et ne peut pas être surchargée. Utilisez <code>ENTRYPOINT</code> pour des exécutables fixes
+                    et <code>CMD</code> pour des arguments par défaut.
+                </p>
+
+                <h4>Q2 : Comment partager des fichiers entre conteneurs ?</h4>
+                <p><strong>R :</strong> Utilisez des volumes nommés partagés ou des bind mounts vers le même répertoire
+                    hôte.</p>
+
+                <h4>Q3 : Docker peut-il fonctionner sur Windows/Mac ?</h4>
+                <p><strong>R :</strong> Oui ! Docker Desktop installe une VM Linux légère. Sur Linux, Docker s'exécute
+                    nativement.</p>
+
+                <h4>Q4 : Quelle est la différence entre docker-compose et docker stack ?</h4>
+                <p><strong>R :</strong> <code>docker-compose</code> est pour le développement (un seul hôte).
+                    <code>docker stack</code> est pour Docker Swarm (multi-hôtes).
+                </p>
+
+                <h4>Q5 : Comment mettre à jour une application sans downtime ?</h4>
+                <p><strong>R :</strong> Utilisez un orchestrateur (Swarm/K8s) avec rolling updates, ou utilisez un
+                    reverse proxy (nginx) avec plusieurs instances.</p>
+
+                <h4>Q6 : Pourquoi mon conteneur s'arrête immédiatement ?</h4>
+                <p><strong>R :</strong> Le processus principal s'est terminé. Vérifiez les logs avec
+                    <code>docker logs</code> et assurez-vous que votre <code>CMD</code> ou <code>ENTRYPOINT</code>
+                    démarre un processus qui reste actif.
+                </p>
+
+                <h4>Q7 : Comment nettoyer Docker complètement ?</h4>
+                <p><strong>R :</strong> <code>docker system prune -a --volumes</code> supprime tout (images, conteneurs,
+                    volumes, réseaux non utilisés). ⚠️ Attention : destructif !</p>
+
+                <h4>Q8 : Quelle image de base choisir ?</h4>
+                <p><strong>R :</strong> Pour la production : <code>alpine</code> (petite) ou <code>slim</code>
+                    (compatibilité). Pour le développement : images complètes. Toujours spécifier une version, éviter
+                    <code>latest</code>.
+                </p>
+            </article>
+
+            <article class="sub-section">
+                <h3>Ressources pour Aller Plus Loin</h3>
+                <ul>
+                    <li>📚 <strong>Documentation officielle :</strong> <a href="https://docs.docker.com"
+                            target="_blank">docs.docker.com</a></li>
+                    <li>🎓 <strong>Docker Hub :</strong> <a href="https://hub.docker.com"
+                            target="_blank">hub.docker.com</a> - Millions d'images</li>
+                    <li>📖 <strong>Best Practices :</strong> <a
+                            href="https://docs.docker.com/develop/dev-best-practices/" target="_blank">Docker Best
+                            Practices</a></li>
+                    <li>🐙 <strong>Awesome Docker :</strong> Liste de ressources Docker sur GitHub</li>
+                    <li>🎥 <strong>Formations :</strong> Docker Mastery (Udemy), Kubernetes the Hard Way</li>
+                </ul>
+            </article>
+
+            <article class="sub-section">
+                <h3>Checklist de Démarrage</h3>
+                <div class="advantages">
+                    <p>✅ Installer Docker Desktop (Mac/Windows) ou Docker Engine (Linux)</p>
+                    <p>✅ Vérifier l'installation : <code>docker --version</code> et <code>docker run hello-world</code>
+                    </p>
+                    <p>✅ Comprendre les concepts de base : images, conteneurs, Dockerfile</p>
+                    <p>✅ Créer votre premier Dockerfile et construire une image</p>
+                    <p>✅ Lancer un conteneur et explorer les commandes de base</p>
+                    <p>✅ Créer un docker-compose.yml pour une application multi-conteneurs</p>
+                    <p>✅ Pousser une image sur Docker Hub</p>
+                    <p>✅ Explorer les bonnes pratiques de sécurité et d'optimisation</p>
+                </div>
+            </article>
+        </section>
+
+        <section id="conclusion" class="chapter-section"
+            style="background: linear-gradient(135deg, #f5f7fa 0%, #e8f0f5 100%); padding: 60px 20px; margin-top: 50px; border-radius: 15px;">
+            <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+                <h2 class="chapter-title" style="border: none; background: none; padding: 0; margin-bottom: 30px;">
+                    <span style="font-size: 3em; display: block; margin-bottom: 20px;">🎉</span>
+                    <span style="color: #0db7ed; font-size: 2.5em; font-weight: 800;">Conclusion</span>
+                </h2>
+
+                <div
+                    style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                    <p style="font-size: 1.3em; line-height: 1.8; color: #333; margin-bottom: 30px;">
+                        Félicitations ! 🎊 Vous avez terminé cette formation complète sur Docker. Vous avez maintenant
+                        une compréhension solide de la conteneurisation, de ses concepts fondamentaux jusqu'aux
+                        pratiques avancées.
+                    </p>
+
+                    <div
+                        style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 25px; border-radius: 10px; border-left: 5px solid #4caf50; margin: 30px 0;">
+                        <h3 style="color: #2e7d32; margin-top: 0; font-size: 1.5em;">✨ Ce que vous avez appris :</h3>
+                        <ul style="text-align: left; display: inline-block; color: #1b5e20; line-height: 2;">
+                            <li>Les concepts fondamentaux de Docker (images, conteneurs, Dockerfile)</li>
+                            <li>Comment créer et gérer des conteneurs Docker</li>
+                            <li>L'utilisation de Docker Compose pour des applications complexes</li>
+                            <li>Les bonnes pratiques de sécurité et d'optimisation</li>
+                            <li>Le déploiement en production avec Docker</li>
+                            <li>La collaboration en équipe avec Docker et Laravel Sail</li>
+                        </ul>
+                    </div>
+
+                    <p style="font-size: 1.2em; line-height: 1.8; color: #555; margin: 30px 0;">
+                        La conteneurisation est devenue un standard dans le développement moderne. Les compétences que
+                        vous avez acquises vous permettront de créer des applications plus robustes, portables et
+                        faciles à déployer.
+                    </p>
+                </div>
+
+                <div
+                    style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                    <h3 style="color: #e65100; font-size: 2em; margin-top: 0; margin-bottom: 25px;">
+                        🙏 Remerciements
+                    </h3>
+                    <p style="font-size: 1.2em; line-height: 1.9; color: #5d4037; margin-bottom: 20px;">
+                        Nous tenons à remercier tous ceux qui ont contribué à rendre cette formation possible :
+                    </p>
+                    <div style="text-align: left; display: inline-block; color: #5d4037; line-height: 2.2;">
+                        <p style="margin: 15px 0;">🙏 <strong>À vous, apprenants :</strong> Pour votre engagement et
+                            votre curiosité dans l'apprentissage de Docker</p>
+                        <p style="margin: 15px 0;">📚 <strong>À la communauté Docker :</strong> Pour leurs ressources,
+                            leur documentation et leur support continu</p>
+                        <p style="margin: 15px 0;">💡 <strong>À tous les développeurs :</strong> Qui partagent leurs
+                            connaissances et leurs expériences</p>
+                        <p style="margin: 15px 0;">🚀 <strong>À l'équipe Laravel :</strong> Pour Laravel Sail qui
+                            simplifie l'utilisation de Docker</p>
+                    </div>
+                </div>
+
+                <div
+                    style="background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <h3 style="color: #0db7ed; font-size: 1.8em; margin-top: 0; margin-bottom: 20px;">
+                        🚀 Prochaines Étapes
+                    </h3>
+                    <p style="font-size: 1.1em; line-height: 1.8; color: #333; margin-bottom: 25px;">
+                        Continuez votre apprentissage et mettez en pratique vos connaissances :
+                    </p>
+                    <div style="text-align: left; display: inline-block; color: #555; line-height: 2;">
+                        <p style="margin: 12px 0;">✅ <strong>Pratiquez :</strong> Créez vos propres projets avec Docker
+                        </p>
+                        <p style="margin: 12px 0;">✅ <strong>Explorez :</strong> Découvrez Kubernetes pour
+                            l'orchestration avancée</p>
+                        <p style="margin: 12px 0;">✅ <strong>Partagez :</strong> Contribuez à la communauté Docker</p>
+                        <p style="margin: 12px 0;">✅ <strong>Restez à jour :</strong> Suivez les dernières évolutions de
+                            Docker</p>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 50px; padding: 30px; background: linear-gradient(135deg, #0db7ed 0%, #0a9bc7 100%); border-radius: 12px; color: white;">
+                    <p style="font-size: 1.5em; margin: 0; font-weight: 600;">
+                        Bonne continuation dans votre parcours Docker ! 🐳
+                    </p>
+                    <p style="font-size: 1.1em; margin-top: 15px; opacity: 0.9;">
+                        N'oubliez pas : la pratique est la clé de la maîtrise
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Présentation créée à partir de données fournies. 🐳 La conteneurisation simplifiée.</p>
+        </footer>
+
+    </main>
+
+    <!-- Bouton retour en haut -->
+    <button id="scrollTopBtn" title="Retour en haut">↑</button>
+
+    <script>
+        // Scroll fluide pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Bouton retour en haut
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.style.display = 'block';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Highlight de la section active dans la sidebar
+        const sections = document.querySelectorAll('.chapter-section');
+        const navLinks = document.querySelectorAll('.sidebar a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--docker-blue) 0%, var(--docker-blue-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        #scrollTopBtn:hover {
+            background: linear-gradient(135deg, var(--docker-blue-dark) 0%, var(--docker-blue) 100%);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+    </style>
+</body>
+
+</html>
