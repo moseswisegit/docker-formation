@@ -57,6 +57,7 @@
             background: #ffffff;
             display: flex;
             flex-direction: column;
+            /* Correction: Centrer verticalement tout le contenu */
             justify-content: center;
             align-items: center;
             z-index: 10000;
@@ -71,6 +72,7 @@
 
         .homepage-content {
             margin-top: 200px;
+            /* Grand écran: Marge haute pour centrer verticalement le bloc */
             max-width: 1200px;
             width: 100%;
             text-align: center;
@@ -122,9 +124,9 @@
             padding: 20px 35px;
             border-radius: 50px;
             transform: rotate(-3deg);
-            box-shadow: 0 8px 30px rgba(13, 183, 237, 0.4), 
-                        0 4px 15px rgba(102, 126, 234, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 30px rgba(13, 183, 237, 0.4),
+                0 4px 15px rgba(102, 126, 234, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
             font-weight: 700;
             font-size: 1.1em;
             color: white;
@@ -142,9 +144,9 @@
 
         .moseswise-badge:hover {
             transform: rotate(0deg) scale(1.08);
-            box-shadow: 0 12px 40px rgba(13, 183, 237, 0.5), 
-                        0 6px 20px rgba(102, 126, 234, 0.4),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 0 12px 40px rgba(13, 183, 237, 0.5),
+                0 6px 20px rgba(102, 126, 234, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
             background: linear-gradient(135deg, #0ba5d1 0%, #5a6fd8 50%, #6a3fa0 100%);
         }
 
@@ -185,6 +187,7 @@
 
         .chapters-preview {
             display: grid;
+            /* Deux colonnes minimum de 300px, adaptées si moins de place */
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin: 50px 0;
@@ -243,36 +246,132 @@
             background: linear-gradient(135deg, #0ba5d1 0%, #5a6fd8 100%);
         }
 
-        @media (max-width: 768px) {
-            .homepage h1 {
-                font-size: 2.5em;
+        /* RÈGLES DE RESPONSIVITÉ COMMENCENT ICI */
+
+        /* Optimisation pour les tablettes (max-width: 1024px) */
+        @media (max-width: 1024px) {
+            .homepage-content {
+                margin-top: 50px;
+                /* Réduire fortement la marge pour centrer via flexbox */
             }
 
-            .homepage .subtitle {
-                font-size: 1.2em;
+            .chapters-preview {
+                /* Permettre à la grille de s'adapter si la taille minimum est difficile à atteindre */
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        /* Optimisation pour les smartphones (max-width: 768px) */
+        @media (max-width: 768px) {
+
+            /* Encapsuler les badges dans un conteneur pour les contrôler */
+            .homepage {
+                /* Permet de placer les badges en haut sans qu'ils interfèrent avec le centrage du contenu */
+                padding-top: 20px;
+                justify-content: flex-start;
+                /* Aligner le contenu au début pour les petits écrans */
+            }
+
+            .date-badge {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 0 10px 20px 10px;
             }
 
             .moseswise-badge {
                 position: relative;
                 top: 0;
                 right: 0;
-                margin-bottom: 20px;
+                margin: 0 10px 20px 10px;
                 display: inline-flex;
                 transform: rotate(0deg);
                 padding: 15px 25px;
                 font-size: 0.9em;
+                box-shadow: 0 4px 15px rgba(13, 183, 237, 0.3);
             }
 
-            .moseswise-badge .badge-text {
-                font-size: 1em;
+            .homepage-content {
+                /* ANNULLER COMPLETEMENT LA GRANDE MARGE */
+                margin-top: 20px;
+                padding-top: 0;
             }
 
-            .moseswise-badge .badge-email {
-                font-size: 0.75em;
+            .homepage h1 {
+                font-size: 2.2em;
+            }
+
+            .homepage .subtitle {
+                font-size: 1.1em;
             }
 
             .chapters-preview {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .start-button {
+                padding: 15px 40px;
+                font-size: 1.2em;
+            }
+        }
+
+        /* Optimisation pour les très petits smartphones (max-width: 480px) */
+        @media (max-width: 480px) {
+
+            /* AFFICHER LES BADGES AU-DESSUS DU CONTENU ET LES CENTRER */
+            .homepage {
+                flex-direction: column;
+                align-items: center;
+                padding-top: 10px;
+            }
+
+            /* Utiliser un conteneur temporaire pour les deux badges afin de les aligner correctement */
+            .date-badge {
+                /* S'assure que la date est affichée en haut (relativement à la homepage-content) */
+                margin: 10px auto 10px auto;
+                display: block;
+                position: relative;
+                left: auto;
+                top: auto;
+                width: fit-content;
+            }
+
+            .moseswise-badge {
+                margin: 0 auto 20px auto;
+                padding: 10px 15px;
+                gap: 5px;
+                width: fit-content;
+            }
+
+            .homepage-content {
+                margin-top: 0;
+                /* ANNULLER TOUTE MARGE */
+            }
+
+            .homepage-icon {
+                font-size: 4em;
+                margin-bottom: 15px;
+            }
+
+            .homepage h1 {
+                font-size: 1.6em;
+            }
+
+            .homepage .subtitle {
+                font-size: 0.9em;
+                margin-bottom: 20px;
+            }
+
+            .chapters-preview {
+                margin: 20px 0;
+                gap: 10px;
+            }
+
+            .start-button {
+                padding: 12px 30px;
+                font-size: 1.0em;
+                margin-top: 20px;
             }
         }
     </style>
@@ -282,7 +381,7 @@
 
     <!-- Page d'accueil plein écran -->
     <div id="homepage" class="homepage">
-        <div class="date-badge" id="current-date"></div>
+        <!-- <div class="date-badge" id="current-date"></div> -->
         <div class="moseswise-badge">
             <div class="badge-text">✨ fais pas MosesWise ✨</div>
             <a href="mailto:moseswisegit@gmail.com" class="badge-email">moseswisegit@gmail.com</a>

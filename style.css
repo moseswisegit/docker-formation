@@ -486,57 +486,6 @@ table tr:hover {
     border-bottom: 1px solid var(--docker-blue-dark);
 }
 
-/* --- Responsive (pour les écrans plus petits) --- */
-@media (max-width: 1024px) {
-    body {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        position: static;
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 5px solid var(--docker-blue);
-    }
-
-    .sidebar h2 {
-        text-align: center;
-    }
-
-    .sidebar ul {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .sidebar li {
-        margin: 5px 10px;
-    }
-
-    .sidebar a {
-        padding: 5px 10px;
-        font-size: 1em;
-    }
-
-    .content {
-        margin-left: 0;
-        padding: 20px 5% 50px 5%;
-    }
-
-    .hero-section {
-        padding: 40px 0;
-    }
-
-    .hero-section h1 {
-        font-size: 2em;
-    }
-
-    .chapter-section h3 {
-        font-size: 1.3em;
-    }
-}
-
 /* --- Styles pour les listes --- */
 .sub-section ul,
 .sub-section ol {
@@ -601,4 +550,193 @@ table tr:hover {
 .image-container img:hover {
     transform: scale(1.02);
     box-shadow: var(--shadow-hover);
+}
+
+/* ======================================================= */
+/* ====== RÈGLES DE RESPONSIVITÉ MOBILE (MOBILE FIRST) === */
+/* ======================================================= */
+
+/* Règles pour les tablettes et smartphones (max-width: 1024px) */
+@media (max-width: 1024px) {
+    body {
+        flex-direction: column;
+    }
+
+    /* La sidebar devient une barre de navigation horizontale en haut */
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 5px solid var(--docker-blue);
+        padding: 15px 10px;
+        /* Moins de padding en haut et en bas */
+        overflow-y: hidden;
+    }
+
+    .sidebar h2 {
+        text-align: center;
+        font-size: 1.4em;
+        /* Titre un peu plus grand */
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+    }
+
+    /* Liste des chapitres en ligne (flex) */
+    .sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        /* Petit espace entre les liens */
+    }
+
+    .sidebar li {
+        margin: 5px 0;
+        flex-basis: auto;
+        /* Permet aux liens de prendre leur taille nécessaire */
+    }
+
+    .sidebar a {
+        padding: 5px 10px;
+        font-size: 0.9em;
+        margin-bottom: 0;
+        /* Suppression des effets visuels de la version desktop */
+        border-left: none;
+        transform: translateX(0);
+    }
+
+    .sidebar a::before {
+        width: 0;
+        /* Suppression de la barre verticale */
+    }
+
+    .sidebar a:hover {
+        padding-left: 10px;
+        /* Annuler l'effet de glissement horizontal du desktop */
+    }
+
+
+    /* Le contenu principal prend toute la largeur */
+    .content {
+        margin-left: 0;
+        padding: 20px 5% 50px 5%;
+    }
+
+    /* Ajustement des titres */
+    .hero-section {
+        padding: 40px 0;
+    }
+
+    .hero-section h1 {
+        font-size: 2em;
+    }
+
+    .chapter-section h3 {
+        font-size: 1.3em;
+    }
+}
+
+/* Règles spécifiques pour les petits écrans (smartphones) (max-width: 768px) */
+@media (max-width: 768px) {
+    .content {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Titres */
+    .hero-section h1 {
+        font-size: 1.8em;
+    }
+
+    .hero-section .subtitle {
+        font-size: 1em;
+    }
+
+    .chapter-title {
+        font-size: 1.6em;
+        padding: 10px 15px !important;
+    }
+
+    .chapter-section h3 {
+        font-size: 1.2em;
+    }
+
+    /* Tables: force horizontal scrolling for better display of wide tables */
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    table thead,
+    table tbody,
+    table tr {
+        white-space: nowrap;
+        /* Prevent content break in table cells */
+    }
+
+    table th,
+    table td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+
+    /* Code and Pre blocks */
+    .code-block,
+    .code-example {
+        padding: 15px;
+        font-size: 0.85em;
+    }
+
+    /* Sidebar layout ajustement */
+    .sidebar ul {
+        justify-content: flex-start;
+        /* Aligner à gauche en cas de rupture de ligne */
+        gap: 3px;
+    }
+
+    .sidebar a {
+        font-size: 0.8em;
+        padding: 5px 6px;
+    }
+}
+
+/* Règles spécifiques pour les très petits smartphones (max-width: 480px) */
+@media (max-width: 480px) {
+    .content {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .hero-section h1 {
+        font-size: 1.5em;
+    }
+
+    .chapter-title {
+        font-size: 1.4em;
+    }
+
+    .chapter-section h3 {
+        font-size: 1.1em;
+    }
+
+    /* Sidebar: les liens s'affichent sur plusieurs lignes sans trop d'espace */
+    .sidebar ul {
+        justify-content: flex-start;
+        gap: 3px;
+    }
+
+    .sidebar a {
+        font-size: 0.75em;
+        padding: 4px 6px;
+    }
+
+    /* Bouton retour en haut */
+    #scrollTopBtn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        bottom: 15px;
+        right: 15px;
+    }
 }
